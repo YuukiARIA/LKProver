@@ -5,11 +5,33 @@ import java.util.List;
 
 public abstract class ProofFigure
 {
-	private final String content;
+	private int x;
+	private int y;
+	private String content;
 
 	public ProofFigure(String content)
 	{
 		this.content = content;
+	}
+
+	public void setX(int x)
+	{
+		this.x = x;
+	}
+
+	public int getX()
+	{
+		return x;
+	}
+
+	public void setY(int y)
+	{
+		this.y = y;
+	}
+
+	public int getY()
+	{
+		return y;
 	}
 
 	public String getContent()
@@ -21,7 +43,7 @@ public abstract class ProofFigure
 
 	public static class DeductionNode extends ProofFigure
 	{
-		private final String deductionName;
+		private String deductionName;
 		private List<ProofFigure> subFigures;
 
 		public DeductionNode(String content, String deductionName, ProofFigure ... subFigures)
