@@ -1,0 +1,135 @@
+package lovelogic.sequent;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import lovelogic.syntax.Formula;
+import util.StringUtils;
+
+public class Sequent
+{
+	private Set<Formula> left;
+	private Set<Formula> right;
+
+	public Sequent()
+	{
+		this(new HashSet<Formula>(), new HashSet<Formula>());
+	}
+
+	private Sequent(Set<Formula> left, Set<Formula> right)
+	{
+		this.left = left;
+		this.right = right;
+	}
+
+	public Sequent copy()
+	{
+		return new Sequent(new HashSet<Formula>(left), new HashSet<Formula>(right));
+	}
+
+	public Sequent addLeft(Formula ... as)
+	{
+		for (Formula a : as)
+		{
+			left.add(a);
+		}
+		return this;
+	}
+
+	public Sequent removeLeft(Formula f)
+	{
+		left.remove(f);
+		return this;
+	}
+
+	public boolean containsLeft(Formula f)
+	{
+		return left.contains(f);
+	}
+
+	public Sequent addRight(Formula ... as)
+	{
+		for (Formula a : as)
+		{
+			right.add(a);
+		}
+		return this;
+	}
+
+	public Sequent removeRight(Formula f)
+	{
+		right.remove(f);
+		return this;
+	}
+
+	public boolean containsRight(Formula f)
+	{
+		return right.contains(f);
+	}
+
+	public void dumpDeductions()
+	{
+		System.out.println("== Deductions ==");
+		System.out.println(this);
+		System.out.println("----------------");
+		for (Formula a : left)
+		{
+			List<SequentList> list = new ArrayList<SequentList>();
+			Deducer.getDeductionList(this, a, list);
+			for (SequentList seqs : list)
+			{
+				System.out.println(seqs);
+			}
+		}
+		for (Formula a : right)
+		{
+			List<SequentList> list = new ArrayList<SequentList>();
+			Deducer.getDeductionList(this, a, list);
+			for (SequentList seqs : list)
+			{
+				System.out.println(seqs);
+			}
+		}
+		System.out.println("================");
+	}
+
+	public boolean isAxiom()
+	{
+		for (Formula a : left)
+		{
+			if (right.contains(a))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public String toString()
+	{
+		String s1 = StringUtils.join(left, ", ");
+		String s2 = StringUtils.join(right, ", ");
+		String s = "[" + s1 + " |- " + s2 + "]";
+		if (isAxiom())
+		{
+			s += " (Axiom)";
+		}
+		return s;
+	}
+
+	public static Sequent createGoal(Formula formula)
+	{
+		Sequent s = new Sequent();
+		s.right.add(formula);
+		return s;
+	}
+
+	public Set<Formula> getAllFormulae()
+	{
+		Set<Formula> set = new HashSet<Formula>(left);
+		set.addAll(right);
+		return set;
+	}
+}
