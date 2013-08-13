@@ -39,6 +39,8 @@ public abstract class ProofFigure
 		return content;
 	}
 
+	public abstract int getMaxDepth();
+
 	public abstract <TParam> void accept(VisitorP<TParam> visitor, TParam param);
 
 	public static class DeductionNode extends ProofFigure
@@ -63,6 +65,16 @@ public abstract class ProofFigure
 			return subFigures.get(i);
 		}
 
+		public int getMaxDepth()
+		{
+			int d = 0;
+			for (ProofFigure sub : subFigures)
+			{
+				d = Math.max(sub.getMaxDepth(), d);
+			}
+			return d + 1;
+		}
+
 		public <TParam> void accept(VisitorP<TParam> visitor, TParam param)
 		{
 			visitor.visit(this, param);
@@ -74,6 +86,11 @@ public abstract class ProofFigure
 		public AxiomNode(String content)
 		{
 			super(content);
+		}
+
+		public int getMaxDepth()
+		{
+			return 1;
 		}
 
 		public <TParam> void accept(VisitorP<TParam> visitor, TParam param)
