@@ -1,6 +1,7 @@
 package lovelogic.gui.figure;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public abstract class ProofFigure
@@ -41,7 +42,7 @@ public abstract class ProofFigure
 
 	public abstract int getMaxDepth();
 
-	public abstract <TParam> void accept(VisitorP<TParam> visitor, TParam param);
+	public abstract <T, U> T accept(Visitor<T, U> visitor, U param);
 
 	public static class DeductionNode extends ProofFigure
 	{
@@ -60,9 +61,9 @@ public abstract class ProofFigure
 			return deductionName;
 		}
 
-		public ProofFigure getSubFigure(int i)
+		public Iterable<ProofFigure> getSubFigures()
 		{
-			return subFigures.get(i);
+			return Collections.unmodifiableCollection(subFigures);
 		}
 
 		public int getMaxDepth()
@@ -75,9 +76,9 @@ public abstract class ProofFigure
 			return d + 1;
 		}
 
-		public <TParam> void accept(VisitorP<TParam> visitor, TParam param)
+		public <T, U> T accept(Visitor<T, U> visitor, U param)
 		{
-			visitor.visit(this, param);
+			return visitor.visit(this, param);
 		}
 	}
 
@@ -93,15 +94,15 @@ public abstract class ProofFigure
 			return 1;
 		}
 
-		public <TParam> void accept(VisitorP<TParam> visitor, TParam param)
+		public <T, U> T accept(Visitor<T, U> visitor, U param)
 		{
-			visitor.visit(this, param);
+			return visitor.visit(this, param);
 		}
 	}
 
-	public interface VisitorP<TParam>
+	public interface Visitor<T, U>
 	{
-		public void visit(DeductionNode node, TParam param);
-		public void visit(AxiomNode node, TParam param);
+		public T visit(DeductionNode node, U param);
+		public T visit(AxiomNode node, U param);
 	}
 }
