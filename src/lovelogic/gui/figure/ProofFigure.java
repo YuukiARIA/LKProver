@@ -4,15 +4,19 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class ProofFigure
+public class ProofFigure
 {
 	private int x;
 	private int y;
 	private String content;
+	private String deductionName;
+	private List<ProofFigure> subFigures;
 
-	public ProofFigure(String content)
+	public ProofFigure(String content, String deductionName, ProofFigure ... subFigures)
 	{
 		this.content = content;
+		this.deductionName = deductionName;
+		this.subFigures = Arrays.asList(subFigures);
 	}
 
 	public void setX(int x)
@@ -40,74 +44,33 @@ public abstract class ProofFigure
 		return content;
 	}
 
-	public abstract int getMaxDepth();
-
-	public abstract <T, U> T accept(Visitor<T, U> visitor, U param);
-
-	public static class DeductionNode extends ProofFigure
+	public String getDeductionName()
 	{
-		private String deductionName;
-		private List<ProofFigure> subFigures;
-
-		public DeductionNode(String content, String deductionName, ProofFigure ... subFigures)
-		{
-			super(content);
-			this.deductionName = deductionName;
-			this.subFigures = Arrays.asList(subFigures);
-		}
-
-		public String getDeductionName()
-		{
-			return deductionName;
-		}
-
-		public int countSubFigures()
-		{
-			return subFigures.size();
-		}
-
-		public Iterable<ProofFigure> getSubFigures()
-		{
-			return Collections.unmodifiableCollection(subFigures);
-		}
-
-		public int getMaxDepth()
-		{
-			int d = 0;
-			for (ProofFigure sub : subFigures)
-			{
-				d = Math.max(sub.getMaxDepth(), d);
-			}
-			return d + 1;
-		}
-
-		public <T, U> T accept(Visitor<T, U> visitor, U param)
-		{
-			return visitor.visit(this, param);
-		}
+		return deductionName;
 	}
 
-	public static class AxiomNode extends ProofFigure
+	public boolean isSubFiguresEmpty()
 	{
-		public AxiomNode(String content)
-		{
-			super(content);
-		}
-
-		public int getMaxDepth()
-		{
-			return 1;
-		}
-
-		public <T, U> T accept(Visitor<T, U> visitor, U param)
-		{
-			return visitor.visit(this, param);
-		}
+		return subFigures.isEmpty();
 	}
 
-	public interface Visitor<T, U>
+	public int countSubFigures()
 	{
-		public T visit(DeductionNode node, U param);
-		public T visit(AxiomNode node, U param);
+		return subFigures.size();
+	}
+
+	public Iterable<ProofFigure> getSubFigures()
+	{
+		return Collections.unmodifiableCollection(subFigures);
+	}
+
+	public int getMaxDepth()
+	{
+		int d = 0;
+		for (ProofFigure sub : subFigures)
+		{
+			d = Math.max(sub.getMaxDepth(), d);
+		}
+		return d + 1;
 	}
 }
