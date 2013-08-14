@@ -61,6 +61,11 @@ public abstract class ProofFigure
 			return deductionName;
 		}
 
+		public int countSubFigures()
+		{
+			return subFigures.size();
+		}
+
 		public Iterable<ProofFigure> getSubFigures()
 		{
 			return Collections.unmodifiableCollection(subFigures);
