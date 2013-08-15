@@ -8,7 +8,7 @@ import java.util.List;
 
 public class ProofFigure
 {
-	private static final int MIN_H_GAP = 10;
+	private static final int MIN_H_GAP = 40;
 	private int x;
 	private int y;
 	private int wholeHeight;
@@ -115,7 +115,7 @@ public class ProofFigure
 
 	protected void calcSize(FontMetrics fm)
 	{
-		subWidth = (subFigures.size() - 1) * 10;
+		subWidth = (subFigures.size() - 1) * MIN_H_GAP;
 		int subHeightMax = 0;
 		for (ProofFigure pf : subFigures)
 		{
@@ -142,15 +142,22 @@ public class ProofFigure
 			int subY = y0 - contentHeight - 2 * 4;
 			if (subWidth < contentWidth)
 			{
-				int acsw = subWidth - ((subFigures.size() - 1) * 10);
+				int acsw = subWidth - ((subFigures.size() - 1) * MIN_H_GAP);
 				int sp = contentWidth - acsw;
 				contentX = x0;
 				//int subX = x0 + (contentWidth - subWidth) / 2;
-				locateSubtrees(x0, subY, sp / (subFigures.size() - 1));
+				if (subFigures.size() == 1)
+				{
+					locateSubtrees(x0 + sp / 2, subY, 0);
+				}
+				else
+				{
+					locateSubtrees(x0, subY, sp / (subFigures.size() - 1));
+				}
 			}
 			else
 			{
-				locateSubtrees(x0, subY, 10);
+				locateSubtrees(x0, subY, MIN_H_GAP);
 				//contentX = x0 + (subWidth - contentWidth) / 2;
 				ProofFigure l = subFigures.get(0);
 				ProofFigure r = subFigures.get(subFigures.size() - 1);
