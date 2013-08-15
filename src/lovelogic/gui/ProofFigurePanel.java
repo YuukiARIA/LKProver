@@ -47,6 +47,12 @@ public class ProofFigurePanel extends JPanel
 		}
 	}
 
+	public void setProofFigure(ProofFigure pf)
+	{
+		this.pf = pf;
+		repaint();
+	}
+
 	protected void paintComponent(Graphics g)
 	{
 		((Graphics2D)g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
