@@ -1,8 +1,6 @@
 package lovelogic.sequent;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import lovelogic.syntax.Formula;
@@ -67,32 +65,6 @@ public class Sequent
 	public boolean containsRight(Formula f)
 	{
 		return right.contains(f);
-	}
-
-	public void dumpDeductions()
-	{
-		System.out.println("== Deductions ==");
-		System.out.println(this);
-		System.out.println("----------------");
-		for (Formula a : left)
-		{
-			List<SequentList> list = new ArrayList<SequentList>();
-			Deducer.getDeductionList(this, a, list);
-			for (SequentList seqs : list)
-			{
-				System.out.println(seqs);
-			}
-		}
-		for (Formula a : right)
-		{
-			List<SequentList> list = new ArrayList<SequentList>();
-			Deducer.getDeductionList(this, a, list);
-			for (SequentList seqs : list)
-			{
-				System.out.println(seqs);
-			}
-		}
-		System.out.println("================");
 	}
 
 	public boolean isAxiom()
