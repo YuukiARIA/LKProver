@@ -149,13 +149,13 @@ public class Deducer
 			{
 				SequentList seqs = new SequentList();
 				seqs.addSequent(sequent.copy().removeLeft(a).addRight(a.x));
-				deductions.add(Deduction.of(seqs, "Not-L"));
+				deductions.add(Deduction.of(seqs, "(Not-L)"));
 			}
 			else if (sequent.containsRight(a))
 			{
 				SequentList seqs = new SequentList();
 				seqs.addSequent(sequent.copy().removeRight(a).addLeft(a.x));
-				deductions.add(Deduction.of(seqs, "Not-R"));
+				deductions.add(Deduction.of(seqs, "(Not-R)"));
 			}
 			return null;
 		}
