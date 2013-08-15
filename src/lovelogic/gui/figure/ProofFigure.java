@@ -18,7 +18,7 @@ public class ProofFigure
 	private int contentWidth;
 	private int contentHeight;
 	private int subWidth;
-	private int figureWidth;
+	private int wholeWidth;
 	private int labelWidth;
 	private String content;
 	private String deductionName;
@@ -97,11 +97,6 @@ public class ProofFigure
 		return d + 1;
 	}
 
-	protected int getWholeWidth()
-	{
-		return figureWidth + labelWidth;
-	}
-
 	protected boolean isAxiomNode()
 	{
 		return subFigures.isEmpty();
@@ -114,6 +109,17 @@ public class ProofFigure
 		locate(0, wholeHeight);
 	}
 
+	private int getBottomWidthOfSubtrees()
+	{
+		if (!subFigures.isEmpty())
+		{
+			ProofFigure l = subFigures.get(0);
+			ProofFigure r = subFigures.get(subFigures.size() - 1);
+			return r.contentX + r.contentWidth - l.contentX;
+		}
+		return 0;
+	}
+
 	protected void calcSize(FontMetrics fm)
 	{
 		subWidth = (subFigures.size() - 1) * MIN_H_GAP;
@@ -121,13 +127,16 @@ public class ProofFigure
 		for (ProofFigure pf : subFigures)
 		{
 			pf.calcSize(fm);
-			subWidth += pf.getWholeWidth();
+			subWidth += pf.wholeWidth;
 			subHeightMax = Math.max(pf.wholeHeight, subHeightMax);
 		}
 		contentWidth = fm.stringWidth(content);
 		contentHeight = fm.getHeight();
-		labelWidth = fm.stringWidth(deductionName);
-		figureWidth = Math.max(subWidth, contentWidth);
+		if (!subFigures.isEmpty())
+		{
+			labelWidth = fm.stringWidth(deductionName);
+		}
+		wholeWidth = Math.max(subWidth, Math.max(contentWidth, getBottomWidthOfSubtrees()) + labelWidth);
 		wholeHeight = subHeightMax + 2 * 4 + contentHeight;
 	}
 
@@ -176,13 +185,13 @@ public class ProofFigure
 		for (ProofFigure sub : subFigures)
 		{
 			sub.locate(x, y0);
-			x += sub.getWholeWidth() + gap;
+			x += sub.wholeWidth + gap;
 		}
 	}
 
 	public void drawCenter(Graphics g, int x, int y, int width, int height)
 	{
-		draw(g, x + (width - getWholeWidth()) / 2, y + (height - wholeHeight) / 2);
+		draw(g, x + (width - wholeWidth) / 2, y + (height - wholeHeight) / 2);
 	}
 
 	public void draw(Graphics g, int x, int y)
@@ -194,7 +203,7 @@ public class ProofFigure
 
 	public void draw(Graphics g)
 	{
-		//g.drawRect(x, y - wholeHeight, getWholeWidth(), wholeHeight);
+		//g.drawRect(x, y - wholeHeight, wholeWidth, wholeHeight);
 		//g.drawRect(contentX, contentY, contentWidth, contentHeight);
 
 		FontMetrics fm = g.getFontMetrics();
