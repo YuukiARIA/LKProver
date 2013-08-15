@@ -111,12 +111,7 @@ public class Sequent
 	{
 		String s1 = StringUtils.join(left, ", ");
 		String s2 = StringUtils.join(right, ", ");
-		String s = "[" + s1 + " |- " + s2 + "]";
-		if (isAxiom())
-		{
-			s += " (Axiom)";
-		}
-		return s;
+		return s1 + " |- " + s2;
 	}
 
 	public static Sequent createGoal(Formula formula)
