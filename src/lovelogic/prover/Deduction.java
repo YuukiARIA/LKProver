@@ -1,21 +1,21 @@
 package lovelogic.prover;
 
-import lovelogic.sequent.Sequent;
+import lovelogic.sequent.SequentList;
 
 public class Deduction
 {
-	private Sequent sequent;
+	private SequentList subGoals;
 	private String deductionName;
 
-	public Deduction(Sequent sequent, String deductionName)
+	public Deduction(SequentList subGoals, String deductionName)
 	{
-		this.sequent = sequent;
+		this.subGoals = subGoals;
 		this.deductionName = deductionName;
 	}
 
-	public Sequent getSequent()
+	public SequentList getSubGoals()
 	{
-		return sequent;
+		return subGoals;
 	}
 
 	public String getDeductionName()
@@ -23,8 +23,8 @@ public class Deduction
 		return deductionName;
 	}
 
-	public static Deduction of(Sequent sequent, String deductionName)
+	public static Deduction of(SequentList subGoals, String deductionName)
 	{
-		return new Deduction(sequent, deductionName);
+		return new Deduction(subGoals, deductionName);
 	}
 }
