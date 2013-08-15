@@ -8,14 +8,14 @@ import java.awt.RenderingHints;
 
 import javax.swing.JPanel;
 
-import util.MTree;
-
 import lovelogic.gui.figure.ProofFigure;
 import lovelogic.gui.figure.ProofFigureBuilder;
+import lovelogic.prover.ProofStep;
 import lovelogic.prover.Prover;
 import lovelogic.sequent.Sequent;
 import lovelogic.syntax.Formula;
 import lovelogic.syntax.parser.exception.ParserException;
+import util.MTree;
 
 @SuppressWarnings("serial")
 public class ProofFigurePanel extends JPanel
@@ -30,7 +30,7 @@ public class ProofFigurePanel extends JPanel
 		{
 			Formula x = Formula.parse("~((A \\/ B) /\\ (A \\/ ~B) /\\ (~A \\/ B) /\\ (~A \\/ ~B))");
 			Sequent s = Sequent.createGoal(x);
-			MTree<Sequent> proof = Prover.findProof(s);
+			MTree<ProofStep> proof = Prover.findProof(s);
 			if (proof != null)
 			{
 				System.out.println("Proved.");

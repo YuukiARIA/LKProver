@@ -1,5 +1,6 @@
 package lovelogic;
 
+import lovelogic.prover.ProofStep;
 import lovelogic.prover.Prover;
 import lovelogic.sequent.Sequent;
 import lovelogic.syntax.Formula;
@@ -15,7 +16,7 @@ public class Main
 		{
 			Formula x = Formula.parse("~((A \\/ B) /\\ (A \\/ ~B) /\\ (~A \\/ B) /\\ (~A \\/ ~B))");
 			Sequent s = Sequent.createGoal(x);
-			MTree<Sequent> proof = Prover.findMinimumProof(s);
+			MTree<ProofStep> proof = Prover.findMinimumProof(s);
 			if (proof != null)
 			{
 				System.out.println("Proved.");
@@ -32,10 +33,11 @@ public class Main
 		}
 	}
 
-	private static void showProof(MTree<Sequent> tree, int depth)
+	private static void showProof(MTree<ProofStep> tree, int depth)
 	{
-		System.out.println(StringUtils.repeat(depth, "  ") + tree.get());
-		for (MTree<Sequent> subtree : tree.getSubtrees())
+		ProofStep pr = tree.get();
+		System.out.println(StringUtils.repeat(depth, "  ") + pr.getSequent() + " " + pr.getDeductionName());
+		for (MTree<ProofStep> subtree : tree.getSubtrees())
 		{
 			showProof(subtree, depth + 1);
 		}

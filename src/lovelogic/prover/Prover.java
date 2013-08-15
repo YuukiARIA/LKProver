@@ -13,24 +13,24 @@ public class Prover
 {
 	private Prover() { }
 
-	public static MTree<Sequent> findProof(Sequent goal)
+	public static MTree<ProofStep> findProof(Sequent goal)
 	{
 		return prove(goal, false);
 	}
 
-	public static MTree<Sequent> findMinimumProof(Sequent goal)
+	public static MTree<ProofStep> findMinimumProof(Sequent goal)
 	{
 		return prove(goal, true);
 	}
 
-	private static MTree<Sequent> prove(Sequent goal, boolean minimize)
+	private static MTree<ProofStep> prove(Sequent goal, boolean minimize)
 	{
 		if (goal.isAxiom())
 		{
-			return MTree.of(goal);
+			return MTree.of(ProofStep.of(goal, ""));
 		}
 
-		MTree<Sequent> prMin = null;
+		MTree<ProofStep> prMin = null;
 		List<Deduction> deductions = new ArrayList<Deduction>();
 		for (Formula a : goal.getAllFormulae())
 		{
@@ -40,10 +40,10 @@ public class Prover
 		for (Deduction deduction : deductions)
 		{
 			SequentList subGoals = deduction.getSubGoals();
-			MTree<Sequent> pr = MTree.of(goal);
+			MTree<ProofStep> pr = MTree.of(ProofStep.of(goal, deduction.getDeductionName()));
 			for (Sequent subGoal : subGoals.getSubGoals())
 			{
-				MTree<Sequent> subpr = prove(subGoal, minimize);
+				MTree<ProofStep> subpr = prove(subGoal, minimize);
 				if (subpr != null) 
 				{
 					pr.addSub(subpr);
