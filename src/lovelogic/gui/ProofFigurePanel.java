@@ -8,7 +8,14 @@ import java.awt.RenderingHints;
 
 import javax.swing.JPanel;
 
+import util.MTree;
+
 import lovelogic.gui.figure.ProofFigure;
+import lovelogic.gui.figure.ProofFigureBuilder;
+import lovelogic.prover.Prover;
+import lovelogic.sequent.Sequent;
+import lovelogic.syntax.Formula;
+import lovelogic.syntax.parser.exception.ParserException;
 
 @SuppressWarnings("serial")
 public class ProofFigurePanel extends JPanel
@@ -19,11 +26,25 @@ public class ProofFigurePanel extends JPanel
 	{
 		setPreferredSize(new Dimension(500, 500));
 
-		ProofFigure a1 = new ProofFigure("A");
-		ProofFigure a2 = new ProofFigure("A => B");
-		ProofFigure a3 = new ProofFigure("C");
-		ProofFigure d1 = new ProofFigure("B", "(E-Imp)", a1, a2);
-		pf = new ProofFigure("B /\\ C", "(I-Conj)", d1, a3);
+		try
+		{
+			Formula x = Formula.parse("~((A \\/ B) /\\ (A \\/ ~B) /\\ (~A \\/ B) /\\ (~A \\/ ~B))");
+			Sequent s = Sequent.createGoal(x);
+			MTree<Sequent> proof = Prover.findProof(s);
+			if (proof != null)
+			{
+				System.out.println("Proved.");
+				pf = ProofFigureBuilder.build(proof);
+			}
+			else
+			{
+				System.out.println("Unprovable.");
+			}
+		}
+		catch (ParserException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	protected void paintComponent(Graphics g)
