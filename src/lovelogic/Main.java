@@ -19,8 +19,7 @@ public class Main
 		{
 			Formula x = Formula.parse("~((A \\/ B) /\\ (A \\/ ~B) /\\ (~A \\/ B) /\\ (~A \\/ ~B))");
 			Sequent s = Sequent.createGoal(x);
-			SequentList sl = new SequentList().addSequent(s);
-			MTree<SequentList> proof = proveMin(sl);
+			MTree<Sequent> proof = proveMin(s);
 			if (proof != null)
 			{
 				System.out.println("Proved.");
@@ -72,44 +71,51 @@ public class Main
 		return false;
 	}
 
-	public static MTree<SequentList> proveMin(SequentList sl)
+	private static MTree<Sequent> proveMin(Sequent goal)
 	{
-		MTree<SequentList> pr = MTree.of(sl);
-		for (Sequent goal : sl.getSubGoals())
+		if (goal.isAxiom())
 		{
-			if (goal.isAxiom())
-			{
-				continue;
-			}
+			return MTree.of(goal);
+		}
 
-			List<SequentList> deductions = new ArrayList<SequentList>();
-			for (Formula a : goal.getAllFormulae())
-			{
-				Deducer.getDeductionList(goal, a, deductions);
-			}
+		MTree<Sequent> prMin = null;
+		List<SequentList> deductions = new ArrayList<SequentList>();
+		for (Formula a : goal.getAllFormulae())
+		{
+			Deducer.getDeductionList(goal, a, deductions);
+		}
 
-			MTree<SequentList> subprMin = null;
-			for (SequentList subGoals : deductions)
+		for (SequentList subGoals : deductions)
+		{
+			MTree<Sequent> pr = MTree.of(goal);
+			for (Sequent subGoal : subGoals.getSubGoals())
 			{
-				MTree<SequentList> subpr = proveMin(subGoals);
-				if (subpr != null && (subprMin == null || subpr.getMaxDepth() < subprMin.getMaxDepth())) 
+				MTree<Sequent> subpr = proveMin(subGoal);
+				if (subpr != null) 
 				{
-					subprMin = subpr;
+					pr.addSub(subpr);
+				}
+				else
+				{
+					pr = null;
+					break;
 				}
 			}
-			if (subprMin == null)
+			if (pr != null)
 			{
-				return null;
+				if (prMin == null || pr.getMaxDepth() < prMin.getMaxDepth())
+				{
+					prMin = pr;
+				}
 			}
-			pr.addSub(subprMin);
 		}
-		return pr;
+		return prMin;
 	}
 
-	private static void showProof(MTree<SequentList> tree, int depth)
+	private static void showProof(MTree<Sequent> tree, int depth)
 	{
 		System.out.println(StringUtils.repeat(depth, "  ") + tree.get());
-		for (MTree<SequentList> subtree : tree.getSubtrees())
+		for (MTree<Sequent> subtree : tree.getSubtrees())
 		{
 			showProof(subtree, depth + 1);
 		}
