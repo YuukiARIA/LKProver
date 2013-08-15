@@ -2,8 +2,8 @@ package lovelogic.gui.figure;
 
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class ProofFigure
@@ -21,18 +21,24 @@ public class ProofFigure
 	private int labelWidth;
 	private String content;
 	private String deductionName;
-	private List<ProofFigure> subFigures;
+	private List<ProofFigure> subFigures = new ArrayList<ProofFigure>();
 
 	public ProofFigure(String content)
 	{
-		this(content, "");
+		this.content = content;
+		this.deductionName = "";
 	}
 
 	public ProofFigure(String content, String deductionName, ProofFigure ... subFigures)
 	{
 		this.content = content;
 		this.deductionName = deductionName;
-		this.subFigures = Collections.unmodifiableList(Arrays.asList(subFigures));
+		this.subFigures.addAll(Arrays.asList(subFigures));
+	}
+
+	public void add(ProofFigure pf)
+	{
+		subFigures.add(pf);
 	}
 
 	public void setX(int x)
