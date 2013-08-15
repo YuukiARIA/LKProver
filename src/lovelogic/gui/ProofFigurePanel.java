@@ -9,13 +9,6 @@ import java.awt.RenderingHints;
 import javax.swing.JPanel;
 
 import lovelogic.gui.figure.ProofFigure;
-import lovelogic.gui.figure.ProofFigureBuilder;
-import lovelogic.prover.ProofStep;
-import lovelogic.prover.Prover;
-import lovelogic.sequent.Sequent;
-import lovelogic.syntax.Formula;
-import lovelogic.syntax.parser.exception.ParserException;
-import util.MTree;
 
 @SuppressWarnings("serial")
 public class ProofFigurePanel extends JPanel
@@ -25,26 +18,6 @@ public class ProofFigurePanel extends JPanel
 	public ProofFigurePanel()
 	{
 		setPreferredSize(new Dimension(500, 500));
-
-		try
-		{
-			Formula x = Formula.parse("~((A \\/ B) /\\ (A \\/ ~B) /\\ (~A \\/ B) /\\ (~A \\/ ~B))");
-			Sequent s = Sequent.createGoal(x);
-			MTree<ProofStep> proof = Prover.findProof(s);
-			if (proof != null)
-			{
-				System.out.println("Proved.");
-				pf = ProofFigureBuilder.build(proof);
-			}
-			else
-			{
-				System.out.println("Unprovable.");
-			}
-		}
-		catch (ParserException e)
-		{
-			e.printStackTrace();
-		}
 	}
 
 	public void setProofFigure(ProofFigure pf)
@@ -60,8 +33,11 @@ public class ProofFigurePanel extends JPanel
 		g.setColor(Color.WHITE);
 		g.fillRect(0, 0, getWidth(), getHeight());
 
-		g.setColor(Color.BLACK);
-		pf.layout(g);
-		pf.drawCenter(g, 0, 0, getWidth(), getHeight());
+		if (pf != null)
+		{
+			g.setColor(Color.BLACK);
+			pf.layout(g);
+			pf.drawCenter(g, 0, 0, getWidth(), getHeight());
+		}
 	}
 }
