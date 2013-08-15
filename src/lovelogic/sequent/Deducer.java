@@ -10,18 +10,9 @@ import lovelogic.syntax.Formula.Imply;
 import lovelogic.syntax.Formula.Literal;
 import lovelogic.syntax.Formula.Not;
 import lovelogic.syntax.Formula.Or;
-import util.Pair;
 
 public class Deducer
 {
-	private static class Param extends Pair<Sequent, List<SequentList>>
-	{
-		public Param(Sequent fst, List<SequentList> snd)
-		{
-			super(fst, snd);
-		}
-	}
-
 	private static VisitorImpl visitor = new VisitorImpl();
 
 	public static void getDeductionList(List<Deduction> results, Sequent s, Formula a)
