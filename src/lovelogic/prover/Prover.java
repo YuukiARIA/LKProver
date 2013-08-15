@@ -31,14 +31,15 @@ public class Prover
 		}
 
 		MTree<Sequent> prMin = null;
-		List<SequentList> deductions = new ArrayList<SequentList>();
+		List<Deduction> deductions = new ArrayList<Deduction>();
 		for (Formula a : goal.getAllFormulae())
 		{
-			Deducer.getDeductionList(goal, a, deductions);
+			Deducer.getDeductionList(deductions, goal, a);
 		}
 
-		for (SequentList subGoals : deductions)
+		for (Deduction deduction : deductions)
 		{
+			SequentList subGoals = deduction.getSubGoals();
 			MTree<Sequent> pr = MTree.of(goal);
 			for (Sequent subGoal : subGoals.getSubGoals())
 			{
