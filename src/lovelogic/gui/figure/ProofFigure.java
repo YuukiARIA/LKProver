@@ -9,6 +9,7 @@ import java.util.List;
 public class ProofFigure
 {
 	private static final int MIN_H_GAP = 40;
+
 	private int x;
 	private int y;
 	private int wholeHeight;
@@ -133,6 +134,7 @@ public class ProofFigure
 	protected void locate(int x0, int y0)
 	{
 		x = x0;
+		y = y0;
 		if (isAxiomNode())
 		{
 			contentX = x0;
@@ -192,7 +194,7 @@ public class ProofFigure
 
 	public void draw(Graphics g)
 	{
-		//g.drawRect(x, y, getWholeWidth(), wholeHeight);
+		//g.drawRect(x, y - wholeHeight, getWholeWidth(), wholeHeight);
 		//g.drawRect(contentX, contentY, contentWidth, contentHeight);
 
 		FontMetrics fm = g.getFontMetrics();
