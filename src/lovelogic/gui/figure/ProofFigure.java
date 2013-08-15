@@ -165,6 +165,18 @@ public class ProofFigure
 		}
 	}
 
+	public void drawCenter(Graphics g, int x, int y, int width, int height)
+	{
+		draw(g, x + (width - getWholeWidth()) / 2, y + (height - wholeHeight) / 2);
+	}
+
+	public void draw(Graphics g, int x, int y)
+	{
+		g.translate(x, y);
+		draw(g);
+		g.translate(-x, -y);
+	}
+
 	public void draw(Graphics g)
 	{
 		//g.drawRect(x, y, getWholeWidth(), wholeHeight);

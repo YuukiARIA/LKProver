@@ -35,6 +35,6 @@ public class ProofFigurePanel extends JPanel
 
 		g.setColor(Color.BLACK);
 		pf.layout(g);
-		pf.draw(g);
+		pf.drawCenter(g, 0, 0, getWidth(), getHeight());
 	}
 }
