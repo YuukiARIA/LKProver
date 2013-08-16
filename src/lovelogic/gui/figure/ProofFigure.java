@@ -1,5 +1,6 @@
 package lovelogic.gui.figure;
 
+import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.util.ArrayList;
@@ -13,11 +14,14 @@ public class ProofFigure
 	private int x;
 	private int y;
 	private int wholeHeight;
+	private int contentOffset;
 	private int contentX;
 	private int contentY;
 	private int contentWidth;
 	private int contentHeight;
-	private int subWidth;
+	private int subMinWidth;
+	private int subBottomMinWidth;
+	private int figureWidth;
 	private int wholeWidth;
 	private int labelWidth;
 	private String content;
@@ -60,6 +64,16 @@ public class ProofFigure
 	public int getY()
 	{
 		return y;
+	}
+
+	public int getWholeWidth()
+	{
+		return wholeWidth;
+	}
+
+	public int getWholeHeight()
+	{
+		return wholeHeight;
 	}
 
 	public String getContent()
@@ -115,29 +129,40 @@ public class ProofFigure
 		{
 			ProofFigure l = subFigures.get(0);
 			ProofFigure r = subFigures.get(subFigures.size() - 1);
-			return r.contentX + r.contentWidth - l.contentX;
+			return subMinWidth - (l.contentOffset + r.contentOffset + r.labelWidth);
 		}
 		return 0;
 	}
 
 	protected void calcSize(FontMetrics fm)
 	{
-		subWidth = (subFigures.size() - 1) * MIN_H_GAP;
+		contentWidth = fm.stringWidth(content);
+		contentHeight = fm.getHeight();
+
+		subMinWidth = (subFigures.size() - 1) * MIN_H_GAP;
 		int subHeightMax = 0;
 		for (ProofFigure pf : subFigures)
 		{
 			pf.calcSize(fm);
-			subWidth += pf.wholeWidth;
+			subMinWidth += pf.figureWidth;
 			subHeightMax = Math.max(pf.wholeHeight, subHeightMax);
 		}
-		contentWidth = fm.stringWidth(content);
-		contentHeight = fm.getHeight();
 		if (!subFigures.isEmpty())
 		{
+			subBottomMinWidth = getBottomWidthOfSubtrees();
 			labelWidth = fm.stringWidth(deductionName);
 		}
-		wholeWidth = Math.max(subWidth, Math.max(contentWidth, getBottomWidthOfSubtrees()) + labelWidth);
+		else
+		{
+			subBottomMinWidth = 0;
+			labelWidth = 0;
+		}
+
+		int lineLength = Math.max(contentWidth, subBottomMinWidth);
+		wholeWidth = Math.max(subMinWidth, lineLength + labelWidth);
+		figureWidth = Math.max(contentWidth, subMinWidth);
 		wholeHeight = subHeightMax + 2 * 4 + contentHeight;
+		contentOffset = Math.max(0, subMinWidth - contentWidth) / 2;
 	}
 
 	protected void locate(int x0, int y0)
@@ -151,9 +176,10 @@ public class ProofFigure
 		else
 		{
 			int subY = y0 - contentHeight - 2 * 4;
-			if (subWidth < contentWidth)
+			//System.out.println(content + ": subWidth = " + subMinWidth + ", contentWidth = " + contentWidth);
+			if (subMinWidth < contentWidth)
 			{
-				int acsw = subWidth - ((subFigures.size() - 1) * MIN_H_GAP);
+				int acsw = subMinWidth - ((subFigures.size() - 1) * MIN_H_GAP);
 				int sp = contentWidth - acsw;
 				contentX = x0;
 				//int subX = x0 + (contentWidth - subWidth) / 2;
@@ -169,11 +195,23 @@ public class ProofFigure
 			else
 			{
 				locateSubtrees(x0, subY, MIN_H_GAP);
-				//contentX = x0 + (subWidth - contentWidth) / 2;
 				ProofFigure l = subFigures.get(0);
 				ProofFigure r = subFigures.get(subFigures.size() - 1);
 				int w = r.contentX + r.contentWidth - l.contentX;
 				contentX = l.contentX + (w - contentWidth) / 2;
+				/*
+				if (contentWidth < subBottomMinWidth)
+				{
+					System.out.println("A: " + content);
+				}
+				else
+				{
+					System.out.println("B: " + content);
+					int offs = (contentWidth - subBottomMinWidth) / 2;
+					locateSubtrees(x0 + offs, subY, MIN_H_GAP);
+					contentX = x0;
+				}
+				*/
 			}
 		}
 		contentY = y0 - contentHeight;
@@ -185,13 +223,20 @@ public class ProofFigure
 		for (ProofFigure sub : subFigures)
 		{
 			sub.locate(x, y0);
-			x += sub.wholeWidth + gap;
+			x += sub.figureWidth + gap;
 		}
 	}
 
 	public void drawCenter(Graphics g, int x, int y, int width, int height)
 	{
-		draw(g, x + (width - wholeWidth) / 2, y + (height - wholeHeight) / 2);
+		int x0 = x + (width - wholeWidth) / 2;
+		int y0 = y + (height - wholeHeight) / 2;
+		//g.setColor(Color.LIGHT_GRAY);
+		//g.drawLine(x0, 0, x0, height);
+		//g.drawLine(0, y0, width, y0);
+
+		g.setColor(Color.BLACK);
+		draw(g, x0, y0);
 	}
 
 	public void draw(Graphics g, int x, int y)
@@ -203,9 +248,12 @@ public class ProofFigure
 
 	public void draw(Graphics g)
 	{
-		//g.drawRect(x, y - wholeHeight, wholeWidth, wholeHeight);
-		//g.drawRect(contentX, contentY, contentWidth, contentHeight);
+		//g.setColor(new Color(230, 255, 230));
+		//g.fillRect(contentX, contentY, contentWidth, contentHeight);
+		//g.setColor(Color.RED);
+		//g.drawRect(x, y - wholeHeight, figureWidth, wholeHeight);
 
+		g.setColor(Color.BLACK);
 		FontMetrics fm = g.getFontMetrics();
 		for (ProofFigure sub : subFigures)
 		{
