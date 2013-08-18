@@ -3,6 +3,7 @@ package lovelogic.gui.figure;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,14 +15,7 @@ public class ProofFigure
 	private int x;
 	private int y;
 	private int wholeHeight;
-	private int contentOffset;
-	private int contentX;
-	private int contentY;
-	private int contentWidth;
-	private int contentHeight;
-	private int subMinWidth;
-	private int subBottomMinWidth;
-	private int figureWidth;
+	private Rectangle contentBounds = new Rectangle();
 	private int wholeWidth;
 	private int labelWidth;
 	private String content;
@@ -123,46 +117,48 @@ public class ProofFigure
 		locate(0, wholeHeight);
 	}
 
-	private int getBottomWidthOfSubtrees()
+	private int getLeftBottomX()
 	{
-		if (!subFigures.isEmpty())
-		{
-			ProofFigure l = subFigures.get(0);
-			ProofFigure r = subFigures.get(subFigures.size() - 1);
-			return subMinWidth - (l.contentOffset + r.contentOffset + r.labelWidth);
-		}
-		return 0;
+		return subFigures.get(0).contentBounds.x;
+	}
+
+	private int getSubtreeOriginX()
+	{
+		return subFigures.get(0).x;
+	}
+
+	private int getRightBottomX()
+	{
+		ProofFigure r = subFigures.get(subFigures.size() - 1);
+		return (int)r.contentBounds.getMaxX();
+	}
+
+	private int getSubBottomWidth()
+	{
+		ProofFigure l = subFigures.get(0);
+		ProofFigure r = subFigures.get(subFigures.size() - 1);
+		return r.contentBounds.x + r.contentBounds.width - l.contentBounds.x;
 	}
 
 	protected void calcSize(FontMetrics fm)
 	{
-		contentWidth = fm.stringWidth(content);
-		contentHeight = fm.getHeight();
+		contentBounds.setSize(fm.stringWidth(content), fm.getHeight());
 
-		subMinWidth = (subFigures.size() - 1) * MIN_H_GAP;
 		int subHeightMax = 0;
 		for (ProofFigure pf : subFigures)
 		{
 			pf.calcSize(fm);
-			subMinWidth += pf.figureWidth;
 			subHeightMax = Math.max(pf.wholeHeight, subHeightMax);
 		}
 		if (!subFigures.isEmpty())
 		{
-			subBottomMinWidth = getBottomWidthOfSubtrees();
 			labelWidth = fm.stringWidth(deductionName);
 		}
 		else
 		{
-			subBottomMinWidth = 0;
 			labelWidth = 0;
 		}
-
-		int lineLength = Math.max(contentWidth, subBottomMinWidth);
-		wholeWidth = Math.max(subMinWidth, lineLength + labelWidth);
-		figureWidth = Math.max(contentWidth, subMinWidth);
-		wholeHeight = subHeightMax + 2 * 4 + contentHeight;
-		contentOffset = Math.max(0, subMinWidth - contentWidth) / 2;
+		wholeHeight = subHeightMax + 2 * 4 + contentBounds.height;
 	}
 
 	protected void locate(int x0, int y0)
@@ -171,59 +167,49 @@ public class ProofFigure
 		y = y0;
 		if (isAxiomNode())
 		{
-			contentX = x0;
+			contentBounds.x = x0;
 		}
 		else
 		{
-			int subY = y0 - contentHeight - 2 * 4;
-			//System.out.println(content + ": subWidth = " + subMinWidth + ", contentWidth = " + contentWidth);
-			if (subMinWidth < contentWidth)
-			{
-				int acsw = subMinWidth - ((subFigures.size() - 1) * MIN_H_GAP);
-				int sp = contentWidth - acsw;
-				contentX = x0;
-				//int subX = x0 + (contentWidth - subWidth) / 2;
-				if (subFigures.size() == 1)
-				{
-					locateSubtrees(x0 + sp / 2, subY, 0);
-				}
-				else
-				{
-					locateSubtrees(x0, subY, sp / (subFigures.size() - 1));
-				}
-			}
-			else
-			{
-				locateSubtrees(x0, subY, MIN_H_GAP);
-				ProofFigure l = subFigures.get(0);
-				ProofFigure r = subFigures.get(subFigures.size() - 1);
-				int w = r.contentX + r.contentWidth - l.contentX;
-				contentX = l.contentX + (w - contentWidth) / 2;
-				/*
-				if (contentWidth < subBottomMinWidth)
-				{
-					System.out.println("A: " + content);
-				}
-				else
-				{
-					System.out.println("B: " + content);
-					int offs = (contentWidth - subBottomMinWidth) / 2;
-					locateSubtrees(x0 + offs, subY, MIN_H_GAP);
-					contentX = x0;
-				}
-				*/
-			}
+			int subY = y0 - contentBounds.height - 2 * 4;
+			locateSubtrees(x0, subY);
+			contentBounds.x = getLeftBottomX() + (getSubBottomWidth() - contentBounds.width) / 2;
+			x = Math.min(contentBounds.x, getSubtreeOriginX());
+			translateX(x0 - x);
+			wholeWidth = Math.max(getRightBottomX(), (int)contentBounds.getMaxX()) + labelWidth - x;
+			wholeWidth = Math.max(calcSubtreesWidth(), wholeWidth);
 		}
-		contentY = y0 - contentHeight;
+		contentBounds.y = y0 - contentBounds.height;
 	}
 
-	private void locateSubtrees(int x0, int y0, int gap)
+	private void locateSubtrees(int x0, int y0)
 	{
 		int x = x0;
 		for (ProofFigure sub : subFigures)
 		{
 			sub.locate(x, y0);
-			x += sub.figureWidth + gap;
+			x += sub.wholeWidth + MIN_H_GAP;
+		}
+	}
+
+	private int calcSubtreesWidth()
+	{
+		int w = (subFigures.size() - 1) * MIN_H_GAP;
+		for (int i = 0; i < subFigures.size(); i++)
+		{
+			ProofFigure sub = subFigures.get(i);
+			w += sub.wholeWidth;
+		}
+		return w;
+	}
+
+	private void translateX(int dx)
+	{
+		x += dx;
+		contentBounds.x += dx;
+		for (ProofFigure sub : subFigures)
+		{
+			sub.translateX(dx);
 		}
 	}
 
@@ -249,9 +235,12 @@ public class ProofFigure
 	public void draw(Graphics g)
 	{
 		//g.setColor(new Color(230, 255, 230));
-		//g.fillRect(contentX, contentY, contentWidth, contentHeight);
-		//g.setColor(Color.RED);
+		//g.fillRect(contentBounds.x, contentBounds.y, contentBounds.width, contentBounds.height);
+
+		//g.setColor(new Color(255, 200, 200));
 		//g.drawRect(x, y - wholeHeight, figureWidth, wholeHeight);
+		//g.setColor(new Color(200, 200, 255));
+		//g.drawRect(x, y - wholeHeight, wholeWidth, wholeHeight);
 
 		g.setColor(Color.BLACK);
 		FontMetrics fm = g.getFontMetrics();
@@ -259,32 +248,32 @@ public class ProofFigure
 		{
 			sub.draw(g);
 		}
-		g.drawString(content, contentX, contentY + fm.getAscent());
+		g.drawString(content, contentBounds.x, contentBounds.y + fm.getAscent());
 
 		if (!isAxiomNode())
 		{
-			g.drawLine(getLineLeft(), contentY - 4, getLineRight(), contentY - 4);
-			g.drawString(deductionName, getLineRight(), contentY - 4 - fm.getHeight() / 2 + fm.getAscent());
+			g.drawLine(getLineLeft(), contentBounds.y - 4, getLineRight(), contentBounds.y - 4);
+			g.drawString(deductionName, getLineRight(), contentBounds.y - 4 - fm.getHeight() / 2 + fm.getAscent());
 		}
 	}
 
 	private int getLineLeft()
 	{
-		int x = contentX;
+		int x = contentBounds.x;
 		if (!subFigures.isEmpty())
 		{
-			x = Math.min(x, subFigures.get(0).contentX);
+			x = Math.min(x, subFigures.get(0).contentBounds.x);
 		}
 		return x;
 	}
 
 	private int getLineRight()
 	{
-		int x = contentX + contentWidth;
+		int x = (int)contentBounds.getMaxX();
 		if (!subFigures.isEmpty())
 		{
 			ProofFigure rightMost = subFigures.get(subFigures.size() - 1);
-			x = Math.max(x, rightMost.contentX + rightMost.contentWidth);
+			x = Math.max(x, (int)rightMost.contentBounds.getMaxX());
 		}
 		return x;
 	}
