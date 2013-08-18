@@ -5,7 +5,7 @@ Description
 -----------
 This is an LK proof searcher and visualizer.
 
-Implimented Deduction Rules
+Implemented Deduction Rules
 ---------------------------
 Formulae sequences in each sequents are regarded as set.
 Therefore rules of contraction and permutation are not needed.
@@ -60,3 +60,4 @@ Therefore rules of contraction and permutation are not needed.
       L, A |- R
     ------------ (Not-R)
      L |- ~A, R
+ 
