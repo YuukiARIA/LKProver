@@ -168,6 +168,7 @@ public class ProofFigure
 		if (isAxiomNode())
 		{
 			contentBounds.x = x0;
+			wholeWidth = contentBounds.width;
 		}
 		else
 		{
