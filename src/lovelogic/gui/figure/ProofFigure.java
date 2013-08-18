@@ -98,27 +98,6 @@ public class ProofFigure
 		locate(0, wholeHeight);
 	}
 
-	private int getLeftBottomX()
-	{
-		return subFigures.get(0).contentBounds.x;
-	}
-
-	private int getSubtreeOriginX()
-	{
-		return subFigures.get(0).x;
-	}
-
-	private int getRightBottomX()
-	{
-		ProofFigure r = subFigures.get(subFigures.size() - 1);
-		return (int)r.contentBounds.getMaxX();
-	}
-
-	private int getSubBottomWidth()
-	{
-		return getRightBottomX() - getLeftBottomX();
-	}
-
 	protected void calcSize(FontMetrics fm)
 	{
 		contentBounds.setSize(fm.stringWidth(content), fm.getHeight());
@@ -242,7 +221,7 @@ public class ProofFigure
 		int x = contentBounds.x;
 		if (!subFigures.isEmpty())
 		{
-			x = Math.min(x, subFigures.get(0).contentBounds.x);
+			x = Math.min(getLeftBottomX(), x);
 		}
 		return x;
 	}
@@ -252,9 +231,29 @@ public class ProofFigure
 		int x = (int)contentBounds.getMaxX();
 		if (!subFigures.isEmpty())
 		{
-			ProofFigure rightMost = subFigures.get(subFigures.size() - 1);
-			x = Math.max(x, (int)rightMost.contentBounds.getMaxX());
+			x = Math.max(getRightBottomX(), x);
 		}
 		return x;
+	}
+
+	private int getSubtreeOriginX()
+	{
+		return subFigures.get(0).x;
+	}
+
+	private int getLeftBottomX()
+	{
+		return subFigures.get(0).contentBounds.x;
+	}
+
+	private int getRightBottomX()
+	{
+		ProofFigure r = subFigures.get(subFigures.size() - 1);
+		return (int)r.contentBounds.getMaxX();
+	}
+
+	private int getSubBottomWidth()
+	{
+		return getRightBottomX() - getLeftBottomX();
 	}
 }
