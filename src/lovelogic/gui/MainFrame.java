@@ -1,6 +1,7 @@
 package lovelogic.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.RenderedImage;
@@ -16,6 +17,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -42,7 +44,9 @@ public class MainFrame extends JFrame
 		setTitle("LK Prover");
 
 		pfPanel = new ProofFigurePanel();
-		add(pfPanel, BorderLayout.CENTER);
+		JScrollPane jsp = new JScrollPane(pfPanel);
+		jsp.setPreferredSize(new Dimension(400, 200));
+		add(jsp, BorderLayout.CENTER);
 
 		textInput = new JTextField();
 		textInput.addActionListener(new ActionListener()
