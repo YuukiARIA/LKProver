@@ -10,7 +10,7 @@ import java.util.List;
 
 public class ProofFigure
 {
-	private static final int MIN_H_GAP = 40;
+	private static final int H_GAP = 40;
 	private static final int LABEL_GAP = 5;
 
 	private int x;
@@ -61,36 +61,6 @@ public class ProofFigure
 		return deductionName;
 	}
 
-	public boolean isSubFiguresEmpty()
-	{
-		return subFigures.isEmpty();
-	}
-
-	public int countSubFigures()
-	{
-		return subFigures.size();
-	}
-
-	public Iterable<ProofFigure> getSubFigures()
-	{
-		return subFigures;
-	}
-
-	public int getMaxDepth()
-	{
-		int d = 0;
-		for (ProofFigure sub : subFigures)
-		{
-			d = Math.max(sub.getMaxDepth(), d);
-		}
-		return d + 1;
-	}
-
-	protected boolean isAxiomNode()
-	{
-		return subFigures.isEmpty();
-	}
-
 	public void layout(Graphics g)
 	{
 		FontMetrics fm = g.getFontMetrics();
@@ -123,7 +93,7 @@ public class ProofFigure
 	{
 		x = x0;
 		y = y0;
-		if (isAxiomNode())
+		if (subFigures.isEmpty())
 		{
 			contentBounds.x = x0;
 			wholeWidth = contentBounds.width;
@@ -151,13 +121,13 @@ public class ProofFigure
 		for (ProofFigure sub : subFigures)
 		{
 			sub.locate(x, y0);
-			x += sub.wholeWidth + MIN_H_GAP;
+			x += sub.wholeWidth + H_GAP;
 		}
 	}
 
 	private int calcSubtreesWidth()
 	{
-		int w = (subFigures.size() - 1) * MIN_H_GAP;
+		int w = (subFigures.size() - 1) * H_GAP;
 		for (int i = 0; i < subFigures.size(); i++)
 		{
 			ProofFigure sub = subFigures.get(i);
@@ -201,15 +171,15 @@ public class ProofFigure
 		//g.drawRect(x, y - wholeHeight, wholeWidth, wholeHeight);
 
 		g.setColor(Color.BLACK);
-		FontMetrics fm = g.getFontMetrics();
 		for (ProofFigure sub : subFigures)
 		{
 			sub.draw(g);
 		}
 
+		FontMetrics fm = g.getFontMetrics();
 		int baseLine = contentBounds.y + fm.getAscent();
 		g.drawString(content, contentBounds.x, baseLine);
-		if (!isAxiomNode())
+		if (!subFigures.isEmpty())
 		{
 			g.drawLine(getLineLeft(), contentBounds.y - 4, getLineRight(), contentBounds.y - 4);
 			g.drawString(deductionName, getLineRight() + LABEL_GAP, baseLine - 4 - fm.getHeight() / 2);
