@@ -3,9 +3,17 @@ package lovelogic.gui;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.RenderedImage;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -37,13 +45,19 @@ public class MainFrame extends JFrame
 		add(pfPanel, BorderLayout.CENTER);
 
 		textInput = new JTextField();
+		textInput.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				prove();
+			}
+		});
 		buttonProve = new JButton("Prove");
 		buttonProve.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				String input = textInput.getText();
-				prove(input);
+				prove();
 			}
 		});
 
@@ -52,11 +66,14 @@ public class MainFrame extends JFrame
 		panelBottom.add(buttonProve, BorderLayout.EAST);
 		add(panelBottom, BorderLayout.SOUTH);
 
+		setJMenuBar(new MainMenuBar());
+
 		pack();
 	}
 
-	private void prove(String input)
+	private void prove()
 	{
+		String input = textInput.getText();
 		try
 		{
 			Formula x = Formula.parse(input);
@@ -77,6 +94,61 @@ public class MainFrame extends JFrame
 		{
 			JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();
+		}
+	}
+
+	private void saveImage()
+	{
+		RenderedImage image = pfPanel.getDrawingAsImage();
+
+		JFileChooser jfc = new JFileChooser(new File("."));
+		jfc.setMultiSelectionEnabled(false);
+		if (jfc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
+		{
+			File file = jfc.getSelectedFile();
+			try
+			{
+				ImageIO.write(image, "png", file);
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void close()
+	{
+		dispose();
+	}
+
+	private class MainMenuBar extends JMenuBar
+	{
+		public MainMenuBar()
+		{
+			JMenu menuFile = new JMenu("File");
+			JMenuItem itemSaveImg = new JMenuItem("Save Image...");
+			JMenuItem itemExit = new JMenuItem("Exit");
+
+			menuFile.add(itemSaveImg);
+			menuFile.addSeparator();
+			menuFile.add(itemExit);
+			add(menuFile);
+
+			itemSaveImg.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					saveImage();
+				}
+			});
+			itemExit.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					close();
+				}
+			});
 		}
 	}
 
