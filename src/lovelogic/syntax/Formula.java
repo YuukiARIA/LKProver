@@ -79,7 +79,12 @@ public abstract class Formula
 
 		public boolean equals(Object o)
 		{
-			return o == this || o instanceof Binary && x.equals(((Binary)o).x) && y.equals(((Binary)o).y);
+			return o == this || getClass() == o.getClass() && bothEq((Binary)o);
+		}
+
+		protected boolean bothEq(Binary b)
+		{
+			return x.equals(b.x) && y.equals(b.y);
 		}
 
 		protected abstract String operator();
