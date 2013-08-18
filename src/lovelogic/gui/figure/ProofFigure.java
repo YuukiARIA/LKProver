@@ -116,9 +116,7 @@ public class ProofFigure
 
 	private int getSubBottomWidth()
 	{
-		ProofFigure l = subFigures.get(0);
-		ProofFigure r = subFigures.get(subFigures.size() - 1);
-		return r.contentBounds.x + r.contentBounds.width - l.contentBounds.x;
+		return getRightBottomX() - getLeftBottomX();
 	}
 
 	protected void calcSize(FontMetrics fm)
