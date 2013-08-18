@@ -21,7 +21,6 @@ public class ProofFigurePanel extends JPanel
 
 	public ProofFigurePanel()
 	{
-		setPreferredSize(new Dimension(500, 500));
 	}
 
 	public void setProofFigure(ProofFigure pf)
@@ -34,6 +33,7 @@ public class ProofFigurePanel extends JPanel
 			setPreferredSize(drawer.getSize());
 			g.dispose();
 		}
+		revalidate();
 		repaint();
 	}
 
