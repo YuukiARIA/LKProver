@@ -11,6 +11,7 @@ import java.util.List;
 public class ProofFigure
 {
 	private static final int MIN_H_GAP = 40;
+	private static final int LABEL_GAP = 5;
 
 	private int x;
 	private int y;
@@ -38,26 +39,6 @@ public class ProofFigure
 	public void add(ProofFigure pf)
 	{
 		subFigures.add(pf);
-	}
-
-	public void setX(int x)
-	{
-		this.x = x;
-	}
-
-	public int getX()
-	{
-		return x;
-	}
-
-	public void setY(int y)
-	{
-		this.y = y;
-	}
-
-	public int getY()
-	{
-		return y;
 	}
 
 	public int getWholeWidth()
@@ -177,7 +158,11 @@ public class ProofFigure
 			contentBounds.x = getLeftBottomX() + (getSubBottomWidth() - contentBounds.width) / 2;
 			x = Math.min(contentBounds.x, getSubtreeOriginX());
 			translateX(x0 - x);
-			wholeWidth = Math.max(getRightBottomX(), (int)contentBounds.getMaxX()) + labelWidth - x;
+			wholeWidth = Math.max(getRightBottomX(), (int)contentBounds.getMaxX()) - x;
+			if (labelWidth != 0)
+			{
+				wholeWidth += LABEL_GAP + labelWidth;
+			}
 			wholeWidth = Math.max(calcSubtreesWidth(), wholeWidth);
 		}
 		contentBounds.y = y0 - contentBounds.height;
@@ -218,9 +203,6 @@ public class ProofFigure
 	{
 		int x0 = x + (width - wholeWidth) / 2;
 		int y0 = y + (height - wholeHeight) / 2;
-		//g.setColor(Color.LIGHT_GRAY);
-		//g.drawLine(x0, 0, x0, height);
-		//g.drawLine(0, y0, width, y0);
 
 		g.setColor(Color.BLACK);
 		draw(g, x0, y0);
@@ -238,8 +220,6 @@ public class ProofFigure
 		//g.setColor(new Color(230, 255, 230));
 		//g.fillRect(contentBounds.x, contentBounds.y, contentBounds.width, contentBounds.height);
 
-		//g.setColor(new Color(255, 200, 200));
-		//g.drawRect(x, y - wholeHeight, figureWidth, wholeHeight);
 		//g.setColor(new Color(200, 200, 255));
 		//g.drawRect(x, y - wholeHeight, wholeWidth, wholeHeight);
 
@@ -249,12 +229,13 @@ public class ProofFigure
 		{
 			sub.draw(g);
 		}
-		g.drawString(content, contentBounds.x, contentBounds.y + fm.getAscent());
 
+		int baseLine = contentBounds.y + fm.getAscent();
+		g.drawString(content, contentBounds.x, baseLine);
 		if (!isAxiomNode())
 		{
 			g.drawLine(getLineLeft(), contentBounds.y - 4, getLineRight(), contentBounds.y - 4);
-			g.drawString(deductionName, getLineRight(), contentBounds.y - 4 - fm.getHeight() / 2 + fm.getAscent());
+			g.drawString(deductionName, getLineRight() + LABEL_GAP, baseLine - 4 - fm.getHeight() / 2);
 		}
 	}
 
