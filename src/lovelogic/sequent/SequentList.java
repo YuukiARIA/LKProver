@@ -36,6 +36,18 @@ public class SequentList
 		return new SequentList(newList);
 	}
 
+	public boolean isIntuitionistic()
+	{
+		for (Sequent s : list)
+		{
+			if (!s.isIntuitionistic())
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public Iterable<Sequent> getSubGoals()
 	{
 		return Collections.unmodifiableCollection(list);

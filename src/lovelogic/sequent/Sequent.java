@@ -79,6 +79,11 @@ public class Sequent
 		return false;
 	}
 
+	public boolean isIntuitionistic()
+	{
+		return right.size() <= 1;
+	}
+
 	public String toString()
 	{
 		String s1 = StringUtils.join(left, ", ");
