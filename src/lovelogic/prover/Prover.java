@@ -15,15 +15,15 @@ public class Prover
 
 	public static MTree<ProofStep> findProof(Sequent goal)
 	{
-		return prove(goal, false);
+		return searchProof(goal, false);
 	}
 
 	public static MTree<ProofStep> findMinimumProof(Sequent goal)
 	{
-		return prove(goal, true);
+		return searchProof(goal, true);
 	}
 
-	private static MTree<ProofStep> prove(Sequent goal, boolean minimize)
+	public static MTree<ProofStep> searchProof(Sequent goal, boolean minimize)
 	{
 		if (goal.isAxiom())
 		{
@@ -43,7 +43,7 @@ public class Prover
 			MTree<ProofStep> pr = MTree.of(ProofStep.of(goal, deduction.getDeductionName()));
 			for (Sequent subGoal : subGoals.getSubGoals())
 			{
-				MTree<ProofStep> subpr = prove(subGoal, minimize);
+				MTree<ProofStep> subpr = searchProof(subGoal, minimize);
 				if (subpr != null) 
 				{
 					pr.addSub(subpr);
