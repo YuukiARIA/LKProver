@@ -22,6 +22,7 @@ public class ProofFigure
 	private int labelWidth;
 	private String content;
 	private String deductionName;
+	private Color contentBackColor = Color.WHITE;
 	private List<ProofFigure> subFigures = new ArrayList<ProofFigure>();
 
 	public ProofFigure(String content)
@@ -60,6 +61,11 @@ public class ProofFigure
 	public String getDeductionName()
 	{
 		return deductionName;
+	}
+
+	public void setContentBackground(Color color)
+	{
+		this.contentBackColor = color;
 	}
 
 	public void layout(Graphics g)
@@ -168,11 +174,8 @@ public class ProofFigure
 
 	public void draw(Graphics g)
 	{
-		//g.setColor(new Color(230, 255, 230));
-		//g.fillRect(contentBounds.x, contentBounds.y, contentBounds.width, contentBounds.height);
-
-		//g.setColor(new Color(200, 200, 255));
-		//g.drawRect(x, y - wholeHeight, wholeWidth, wholeHeight);
+		g.setColor(contentBackColor);
+		g.fillRect(contentBounds.x, contentBounds.y, contentBounds.width, contentBounds.height);
 
 		g.setColor(Color.BLACK);
 		for (ProofFigure sub : subFigures)
