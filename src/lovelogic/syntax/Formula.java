@@ -38,12 +38,12 @@ public abstract class Formula
 
 	public abstract <TParam, TRet> TRet accept(Visitor<TParam, TRet> visitor, TParam param);
 
-	protected boolean rightAssoc()
+	public boolean rightAssoc()
 	{
 		return false;
 	}
 
-	protected abstract int prec();
+	public abstract int prec();
 
 	public String toString()
 	{
@@ -89,7 +89,7 @@ public abstract class Formula
 			return visitor.visit(this, param);
 		}
 
-		protected int prec()
+		public int prec()
 		{
 			return 0;
 		}
@@ -107,12 +107,12 @@ public abstract class Formula
 			return visitor.visit(this, param);
 		}
 
-		protected int prec()
+		public int prec()
 		{
 			return 1;
 		}
 
-		protected boolean rightAssoc()
+		public boolean rightAssoc()
 		{
 			return true;
 		}
@@ -130,7 +130,7 @@ public abstract class Formula
 			return visitor.visit(this, param);
 		}
 
-		protected int prec()
+		public int prec()
 		{
 			return 2;
 		}
@@ -148,7 +148,7 @@ public abstract class Formula
 			return visitor.visit(this, param);
 		}
 
-		protected int prec()
+		public int prec()
 		{
 			return 3;
 		}
@@ -178,7 +178,7 @@ public abstract class Formula
 			return visitor.visit(this, param);
 		}
 
-		protected int prec()
+		public int prec()
 		{
 			return 4;
 		}
@@ -208,7 +208,7 @@ public abstract class Formula
 			return visitor.visit(this, param);
 		}
 
-		protected int prec()
+		public int prec()
 		{
 			return 5;
 		}
