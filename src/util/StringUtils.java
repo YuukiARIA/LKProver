@@ -3,6 +3,9 @@ package util;
 import java.util.Arrays;
 import java.util.Collection;
 
+import util.strconv.IStringConverter;
+import util.strconv.ToString;
+
 public final class StringUtils
 {
 	private StringUtils() { }
@@ -26,6 +29,11 @@ public final class StringUtils
 
 	public static <T> String join(Collection<T> items, String delim)
 	{
+		return join(items, delim, ToString.getInstance());
+	}
+
+	public static <T> String join(Collection<T> items, String delim, IStringConverter<? super T> converter)
+	{
 		StringBuilder buf = new StringBuilder();
 		boolean first = true;
 		for (T item : items)
@@ -35,17 +43,22 @@ public final class StringUtils
 				buf.append(delim);
 			}
 			first = false;
-			buf.append(item);
+			buf.append(converter.toString(item));
 		}
 		return buf.toString();
 	}
 
 	public static <T> String join(Collection<T> items)
 	{
+		return join(items, ToString.getInstance());
+	}
+
+	public static <T> String join(Collection<T> items, IStringConverter<? super T> converter)
+	{
 		StringBuilder buf = new StringBuilder();
 		for (T item : items)
 		{
-			buf.append(item);
+			buf.append(converter.toString(item));
 		}
 		return buf.toString();
 	}
