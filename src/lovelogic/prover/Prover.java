@@ -15,16 +15,21 @@ public class Prover
 
 	public static MTree<ProofStep> findProof(Sequent goal)
 	{
-		return searchProof(goal, false);
+		return searchProof(goal, false, false);
 	}
 
 	public static MTree<ProofStep> findMinimumProof(Sequent goal)
 	{
-		return searchProof(goal, true);
+		return searchProof(goal, false, true);
 	}
 
-	public static MTree<ProofStep> searchProof(Sequent goal, boolean minimize)
+	public static MTree<ProofStep> searchProof(Sequent goal, boolean intuition, boolean minimize)
 	{
+		if (intuition && !goal.isIntuitionistic())
+		{
+			return null;
+		}
+
 		if (goal.isAxiom())
 		{
 			return MTree.of(ProofStep.of(goal, ""));
@@ -43,7 +48,7 @@ public class Prover
 			MTree<ProofStep> pr = MTree.of(ProofStep.of(goal, deduction.getDeductionName()));
 			for (Sequent subGoal : subGoals.getSubGoals())
 			{
-				MTree<ProofStep> subpr = searchProof(subGoal, minimize);
+				MTree<ProofStep> subpr = searchProof(subGoal, intuition, minimize);
 				if (subpr != null) 
 				{
 					pr.addSub(subpr);
