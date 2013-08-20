@@ -14,12 +14,11 @@ public class ProofFigure
 	private static final int V_GAP = 2;
 	private static final int LABEL_GAP = 5;
 
-	private int x;
-	private int y;
-	private int wholeHeight;
-	private Rectangle contentBounds = new Rectangle();
+	private int originX;
 	private int wholeWidth;
+	private int wholeHeight;
 	private int labelWidth;
+	private Rectangle contentBounds = new Rectangle();
 	private String content;
 	private String deductionName;
 	private Color contentBackColor = Color.WHITE;
@@ -75,7 +74,7 @@ public class ProofFigure
 		locate(0, wholeHeight);
 	}
 
-	protected void calcSize(FontMetrics fm)
+	private void calcSize(FontMetrics fm)
 	{
 		contentBounds.setSize(fm.stringWidth(content), fm.getHeight());
 
@@ -96,10 +95,9 @@ public class ProofFigure
 		wholeHeight = subHeightMax + 2 * V_GAP + contentBounds.height;
 	}
 
-	protected void locate(int x0, int y0)
+	private void locate(int x0, int y0)
 	{
-		x = x0;
-		y = y0;
+		originX = x0;
 		if (subFigures.isEmpty())
 		{
 			contentBounds.x = x0;
@@ -110,9 +108,9 @@ public class ProofFigure
 			int subY = y0 - contentBounds.height - 2 * V_GAP;
 			locateSubtrees(x0, subY);
 			contentBounds.x = getLeftBottomX() + (getSubBottomWidth() - contentBounds.width) / 2;
-			x = Math.min(contentBounds.x, getSubtreeOriginX());
-			translateX(x0 - x);
-			wholeWidth = Math.max(getRightBottomX(), (int)contentBounds.getMaxX()) - x;
+			originX = Math.min(contentBounds.x, getSubtreeOriginX());
+			translateX(x0 - originX);
+			wholeWidth = Math.max(getRightBottomX(), (int)contentBounds.getMaxX()) - originX;
 			if (labelWidth != 0)
 			{
 				wholeWidth += LABEL_GAP + labelWidth;
@@ -147,7 +145,7 @@ public class ProofFigure
 	{
 		if (dx != 0)
 		{
-			x += dx;
+			originX += dx;
 			contentBounds.x += dx;
 			for (ProofFigure sub : subFigures)
 			{
@@ -188,9 +186,15 @@ public class ProofFigure
 		g.drawString(content, contentBounds.x, baseLine);
 		if (!subFigures.isEmpty())
 		{
-			g.drawLine(getLineLeft(), contentBounds.y - V_GAP, getLineRight(), contentBounds.y - V_GAP);
+			drawLine(g);
 			g.drawString(deductionName, getLineRight() + LABEL_GAP, baseLine - V_GAP - fm.getHeight() / 2);
 		}
+	}
+
+	private void drawLine(Graphics g)
+	{
+		int y = contentBounds.y - V_GAP;
+		g.drawLine(getLineLeft(), y, getLineRight(), y);
 	}
 
 	private int getLineLeft()
@@ -215,7 +219,7 @@ public class ProofFigure
 
 	private int getSubtreeOriginX()
 	{
-		return subFigures.get(0).x;
+		return subFigures.get(0).originX;
 	}
 
 	private int getLeftBottomX()
