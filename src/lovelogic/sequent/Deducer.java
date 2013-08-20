@@ -29,18 +29,34 @@ public class Deducer
 
 		public Void visit(Equiv a, Void p)
 		{
-			Formula b = a.x.imply(a.y).and(a.y.imply(a.x));
+			Formula a1 = a.x.imply(a.y);
+			Formula a2 = a.y.imply(a.x);
 			if (sequent.containsLeft(a))
 			{
-				SequentList seqs = new SequentList();
-				seqs.addSequent(sequent.copy().removeLeft(a).addLeft(b));
-				deductions.add(Deduction.of(seqs, "(Unfold-L)"));
+				Sequent s = sequent.copy().removeLeft(a);
+				{
+					SequentList seqs = new SequentList();
+					seqs.addSequent(s.copy().addLeft(a1));
+					deductions.add(Deduction.of(seqs, "(Eqv-L1)"));
+				}
+				{
+					SequentList seqs = new SequentList();
+					seqs.addSequent(s.copy().addLeft(a2));
+					deductions.add(Deduction.of(seqs, "(Eqv-L2)"));
+				}
+				{
+					SequentList seqs = new SequentList();
+					seqs.addSequent(s.copy().addLeft(a1).addLeft(a2));
+					deductions.add(Deduction.of(seqs, "(Eqv-L)"));
+				}
 			}
 			else if (sequent.containsRight(a))
 			{
+				Sequent s = sequent.copy().removeRight(a);
 				SequentList seqs = new SequentList();
-				seqs.addSequent(sequent.copy().removeRight(a).addRight(b));
-				deductions.add(Deduction.of(seqs, "(Unfold-R)"));
+				seqs.addSequent(s.copy().addRight(a1));
+				seqs.addSequent(s.copy().addRight(a2));
+				deductions.add(Deduction.of(seqs, "(Eqv-R)"));
 			}
 			return null;
 		}
