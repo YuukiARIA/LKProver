@@ -45,20 +45,9 @@ public abstract class Formula
 
 	protected abstract int prec();
 
-	protected abstract void buildString(StringBuilder buf);
-
 	public String toString()
 	{
-		StringBuilder buf = new StringBuilder();
-		buildString(buf);
-		return buf.toString();
-	}
-
-	private static void parenString(StringBuilder buf, Formula e, boolean paren)
-	{
-		if (paren) buf.append('(');
-		buf.append(e);
-		if (paren) buf.append(')');
+		return FormulaStringBuilder.toString(this);
 	}
 
 	public static abstract class Binary extends Formula
@@ -86,19 +75,6 @@ public abstract class Formula
 		{
 			return x.equals(b.x) && y.equals(b.y);
 		}
-
-		protected abstract String operator();
-
-		protected void buildString(StringBuilder buf)
-		{
-			boolean parenL = rightAssoc() ? x.prec() <= prec() : x.prec() < prec();
-			boolean parenR = y.prec() < prec();
-			parenString(buf, x, parenL);
-			buf.append(' ');
-			buf.append(operator());
-			buf.append(' ');
-			parenString(buf, y, parenR);
-		}
 	}
 
 	public static class Equiv extends Binary
@@ -116,11 +92,6 @@ public abstract class Formula
 		protected int prec()
 		{
 			return 0;
-		}
-
-		protected String operator()
-		{
-			return "<=>";
 		}
 	}
 
@@ -145,11 +116,6 @@ public abstract class Formula
 		{
 			return true;
 		}
-
-		protected String operator()
-		{
-			return "=>";
-		}
 	}
 
 	public static class Or extends Binary
@@ -168,11 +134,6 @@ public abstract class Formula
 		{
 			return 2;
 		}
-
-		protected String operator()
-		{
-			return "\\/";
-		}
 	}
 
 	public static class And extends Binary
@@ -190,11 +151,6 @@ public abstract class Formula
 		protected int prec()
 		{
 			return 3;
-		}
-
-		protected String operator()
-		{
-			return "/\\";
 		}
 	}
 
@@ -226,13 +182,6 @@ public abstract class Formula
 		{
 			return 4;
 		}
-
-		protected void buildString(StringBuilder buf)
-		{
-			boolean paren = x.prec() < prec();
-			buf.append('~');
-			parenString(buf, x, paren);
-		}
 	}
 
 	public static class Literal extends Formula
@@ -262,11 +211,6 @@ public abstract class Formula
 		protected int prec()
 		{
 			return 5;
-		}
-
-		protected void buildString(StringBuilder buf)
-		{
-			buf.append(name);
 		}
 	}
 
