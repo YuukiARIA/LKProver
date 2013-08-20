@@ -11,6 +11,7 @@ import java.util.List;
 public class ProofFigure
 {
 	private static final int H_GAP = 40;
+	private static final int V_GAP = 2;
 	private static final int LABEL_GAP = 5;
 
 	private int x;
@@ -86,7 +87,7 @@ public class ProofFigure
 		{
 			labelWidth = 0;
 		}
-		wholeHeight = subHeightMax + 2 * 4 + contentBounds.height;
+		wholeHeight = subHeightMax + 2 * V_GAP + contentBounds.height;
 	}
 
 	protected void locate(int x0, int y0)
@@ -100,7 +101,7 @@ public class ProofFigure
 		}
 		else
 		{
-			int subY = y0 - contentBounds.height - 2 * 4;
+			int subY = y0 - contentBounds.height - 2 * V_GAP;
 			locateSubtrees(x0, subY);
 			contentBounds.x = getLeftBottomX() + (getSubBottomWidth() - contentBounds.width) / 2;
 			x = Math.min(contentBounds.x, getSubtreeOriginX());
@@ -138,11 +139,14 @@ public class ProofFigure
 
 	private void translateX(int dx)
 	{
-		x += dx;
-		contentBounds.x += dx;
-		for (ProofFigure sub : subFigures)
+		if (dx != 0)
 		{
-			sub.translateX(dx);
+			x += dx;
+			contentBounds.x += dx;
+			for (ProofFigure sub : subFigures)
+			{
+				sub.translateX(dx);
+			}
 		}
 	}
 
@@ -181,8 +185,8 @@ public class ProofFigure
 		g.drawString(content, contentBounds.x, baseLine);
 		if (!subFigures.isEmpty())
 		{
-			g.drawLine(getLineLeft(), contentBounds.y - 4, getLineRight(), contentBounds.y - 4);
-			g.drawString(deductionName, getLineRight() + LABEL_GAP, baseLine - 4 - fm.getHeight() / 2);
+			g.drawLine(getLineLeft(), contentBounds.y - V_GAP, getLineRight(), contentBounds.y - V_GAP);
+			g.drawString(deductionName, getLineRight() + LABEL_GAP, baseLine - V_GAP - fm.getHeight() / 2);
 		}
 	}
 
