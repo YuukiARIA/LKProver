@@ -9,7 +9,9 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -38,6 +40,8 @@ public class MainFrame extends JFrame
 	private ProofFigurePanel pfPanel;
 	private JTextField textInput;
 	private JButton buttonProve;
+	private JCheckBox checkMinimize;
+	private JCheckBox checkIntuition;
 
 	public MainFrame()
 	{
@@ -65,9 +69,18 @@ public class MainFrame extends JFrame
 			}
 		});
 
+		checkMinimize = new JCheckBox("Minimize Depth of Proof Tree");
+		checkIntuition = new JCheckBox("LJ (Intuitionistic Logic)");
+
+		JPanel panelChecks = new JPanel();
+		panelChecks.setLayout(new BoxLayout(panelChecks, BoxLayout.Y_AXIS));
+		panelChecks.add(checkMinimize);
+		panelChecks.add(checkIntuition);
+
 		JPanel panelBottom = new JPanel(new BorderLayout());
 		panelBottom.add(textInput, BorderLayout.CENTER);
 		panelBottom.add(buttonProve, BorderLayout.EAST);
+		panelBottom.add(panelChecks, BorderLayout.SOUTH);
 		add(panelBottom, BorderLayout.SOUTH);
 
 		setJMenuBar(new MainMenuBar());
@@ -78,11 +91,14 @@ public class MainFrame extends JFrame
 	private void prove()
 	{
 		String input = textInput.getText();
+		boolean intuition = checkIntuition.isSelected();
+		boolean minimize = checkMinimize.isSelected();
+
 		try
 		{
 			Formula x = Formula.parse(input);
 			Sequent s = Sequent.createGoal(x);
-			MTree<ProofStep> proof = Prover.findMinimumProof(s);
+			MTree<ProofStep> proof = Prover.searchProof(s, intuition, minimize);
 			if (proof != null)
 			{
 				ProofFigure pf = ProofFigureBuilder.build(proof);
