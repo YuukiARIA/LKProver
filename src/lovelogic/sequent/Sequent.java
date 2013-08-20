@@ -3,6 +3,7 @@ package lovelogic.sequent;
 import java.util.HashSet;
 import java.util.Set;
 
+import lovelogic.latex.LaTeXStringBuilder;
 import lovelogic.syntax.Formula;
 import util.StringUtils;
 
@@ -89,6 +90,13 @@ public class Sequent
 		String s1 = StringUtils.join(left, ", ");
 		String s2 = StringUtils.join(right, ", ");
 		return s1 + " |- " + s2;
+	}
+
+	public String toLaTeXString()
+	{
+		String s1 = StringUtils.join(left, ",\\ ", LaTeXStringBuilder.getStringConverter());
+		String s2 = StringUtils.join(right, ",\\ ", LaTeXStringBuilder.getStringConverter());
+		return "\\strut " + s1 + " \\ \\vdash \\ " + s2;
 	}
 
 	public static Sequent createGoal(Formula formula)
