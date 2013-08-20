@@ -23,6 +23,11 @@ public class MTree<T>
 		subs.add(sub);
 	}
 
+	public boolean hasNoSubtree()
+	{
+		return subs.isEmpty();
+	}
+
 	public Iterable<MTree<T>> getSubtrees()
 	{
 		return subs;
