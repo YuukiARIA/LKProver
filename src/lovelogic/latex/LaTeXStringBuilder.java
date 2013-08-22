@@ -1,6 +1,7 @@
 package lovelogic.latex;
 
 import lovelogic.prover.ProofStep;
+import lovelogic.sequent.Sequent;
 import lovelogic.syntax.Formula;
 import lovelogic.syntax.Formula.And;
 import lovelogic.syntax.Formula.Binary;
@@ -33,7 +34,9 @@ public class LaTeXStringBuilder
 
 		if (prtree.hasNoSubtree())
 		{
-			buf.append(indent + prtree.get().getSequent().toLaTeXString() + "\n");
+			buf.append(indent);
+			toString(buf, prtree.get().getSequent());
+			buf.append('\n');
 			return;
 		}
 
@@ -44,7 +47,7 @@ public class LaTeXStringBuilder
 			buf.append("[\\hbox{" + pr.getDeductionName() + "}]");
 		}
 		buf.append("{");
-		buf.append(pr.getSequent().toLaTeXString());
+		toString(buf, pr.getSequent());
 		buf.append("}\n");
 
 		buf.append(indent + "{\n");
@@ -61,13 +64,16 @@ public class LaTeXStringBuilder
 		buf.append(indent + "}\n");
 	}
 
-	public static IStringConverter<Formula> getStringConverter()
+	private static void toString(StringBuilder buf, Sequent sequent)
 	{
 		if (converter == null)
 		{
 			converter = new LaTeXStringConverter();
 		}
-		return converter;
+		buf.append("\\strut ");
+		buf.append(StringUtils.join(sequent.getLeftFormulae(), ",\\ ", converter));
+		buf.append(" \\ \\vdash \\ ");
+		buf.append(StringUtils.join(sequent.getRightFormulae(), ",\\ ", converter));
 	}
 
 	public static String toString(Formula e)

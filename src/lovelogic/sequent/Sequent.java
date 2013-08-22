@@ -1,9 +1,9 @@
 package lovelogic.sequent;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import lovelogic.latex.LaTeXStringBuilder;
 import lovelogic.syntax.Formula;
 import util.StringUtils;
 
@@ -26,6 +26,23 @@ public class Sequent
 	public Sequent copy()
 	{
 		return new Sequent(new HashSet<Formula>(left), new HashSet<Formula>(right));
+	}
+
+	public Set<Formula> getLeftFormulae()
+	{
+		return Collections.unmodifiableSet(left);
+	}
+
+	public Set<Formula> getRightFormulae()
+	{
+		return Collections.unmodifiableSet(right);
+	}
+
+	public Set<Formula> getAllFormulae()
+	{
+		Set<Formula> set = new HashSet<Formula>(left);
+		set.addAll(right);
+		return set;
 	}
 
 	public Sequent addLeft(Formula ... as)
@@ -92,24 +109,10 @@ public class Sequent
 		return s1 + " |- " + s2;
 	}
 
-	public String toLaTeXString()
-	{
-		String s1 = StringUtils.join(left, ",\\ ", LaTeXStringBuilder.getStringConverter());
-		String s2 = StringUtils.join(right, ",\\ ", LaTeXStringBuilder.getStringConverter());
-		return "\\strut " + s1 + " \\ \\vdash \\ " + s2;
-	}
-
 	public static Sequent createGoal(Formula formula)
 	{
 		Sequent s = new Sequent();
 		s.right.add(formula);
 		return s;
-	}
-
-	public Set<Formula> getAllFormulae()
-	{
-		Set<Formula> set = new HashSet<Formula>(left);
-		set.addAll(right);
-		return set;
 	}
 }
