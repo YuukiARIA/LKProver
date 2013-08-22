@@ -3,10 +3,47 @@ LKProver
 
 Description
 -----------
+
 This is an LK proof searcher and visualizer.
+
+
+Syntax
+------
+
+### Syntax of a propositional formula
+
+Only implication is right-associative.
+
+    <<Equiv>>
+        ::= <<Impl>> { "<=>" <<Impl>> }
+    
+    <<Impl>>
+        ::= <<Disj>> [ "=>" <<Impl>> ]
+    
+    <<Disj>>
+        ::= <<Conj>> { "\/" <<Conj>> }
+    
+    <<Conj>>
+        ::= <<Neg>> { "/\" <<Neg>> }
+    
+    <<Neg>>
+        ::= "~" <<Neg>>
+          | <<Primary>>
+    
+    <<Primary>>
+        ::= <LITERAL>
+          | "(" <<Equiv>> ")"
+
+### Literals
+
+A sequence of more than one character of alphabet (A-Z, a-z) or digits (0-9)
+is a literal (propositional variable).
+The literals are case sensitive.
+
 
 Implemented Deduction Rules
 ---------------------------
+
 Formulae sequences in each sequents are regarded as set.
 Therefore rules of contraction and permutation are not needed.
 
@@ -60,4 +97,8 @@ Therefore rules of contraction and permutation are not needed.
       L, A |- R
     ------------ (Not-R)
      L |- ~A, R
- 
+
+Author
+------
+
+YuukiARIA
