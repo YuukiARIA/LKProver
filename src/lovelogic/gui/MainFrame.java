@@ -27,6 +27,7 @@ import javax.swing.WindowConstants;
 
 import lovelogic.gui.figure.ProofFigure;
 import lovelogic.gui.figure.ProofFigureBuilder;
+import lovelogic.latex.LaTeXStringBuilder;
 import lovelogic.prover.ProofStep;
 import lovelogic.prover.Prover;
 import lovelogic.sequent.Sequent;
@@ -37,6 +38,7 @@ import util.MTree;
 @SuppressWarnings("serial")
 public class MainFrame extends JFrame
 {
+	private MTree<ProofStep> proof;
 	private ProofFigurePanel pfPanel;
 	private JTextField textInput;
 	private JButton buttonProve;
@@ -98,7 +100,7 @@ public class MainFrame extends JFrame
 		{
 			Formula x = Formula.parse(input);
 			Sequent s = Sequent.createGoal(x);
-			MTree<ProofStep> proof = Prover.searchProof(s, intuition, minimize);
+			proof = Prover.searchProof(s, intuition, minimize);
 			if (proof != null)
 			{
 				ProofFigure pf = ProofFigureBuilder.build(proof);
@@ -142,18 +144,35 @@ public class MainFrame extends JFrame
 		dispose();
 	}
 
+	private void convertLaTeX()
+	{
+		if (proof == null)
+		{
+			return;
+		}
+
+		TextDialog dialog = new TextDialog(this);
+		dialog.setText(LaTeXStringBuilder.toLaTeX(proof));
+		dialog.setLocationRelativeTo(this);
+		dialog.setVisible(true);
+	}
+
 	private class MainMenuBar extends JMenuBar
 	{
 		public MainMenuBar()
 		{
 			JMenu menuFile = new JMenu("File");
+			JMenu menuEdit = new JMenu("Edit");
 			JMenuItem itemSaveImg = new JMenuItem("Save Image...");
 			JMenuItem itemExit = new JMenuItem("Exit");
+			JMenuItem itemConvert = new JMenuItem("Convert to LaTeX");
 
 			menuFile.add(itemSaveImg);
 			menuFile.addSeparator();
 			menuFile.add(itemExit);
+			menuEdit.add(itemConvert);
 			add(menuFile);
+			add(menuEdit);
 
 			itemSaveImg.addActionListener(new ActionListener()
 			{
@@ -167,6 +186,13 @@ public class MainFrame extends JFrame
 				public void actionPerformed(ActionEvent e)
 				{
 					close();
+				}
+			});
+			itemConvert.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					convertLaTeX();
 				}
 			});
 		}
