@@ -22,11 +22,24 @@ public class Config
 
 	private Config() { }
 
+	public String getDefault(String key, String defval)
+	{
+		String value = props.get(key);
+		if (value == null)
+		{
+			props.put(key, defval);
+			value = defval;
+		}
+		return value;
+	}
+
 	public void load(final String fileName)
 	{
 		try
 		{
-			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)));
+			BufferedReader reader = new BufferedReader(
+				new InputStreamReader(new FileInputStream(fileName)));
+
 			String line;
 			while ((line = reader.readLine()) != null)
 			{
@@ -61,7 +74,9 @@ public class Config
 	{
 		try
 		{
-			PrintWriter writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName))));
+			PrintWriter writer = new PrintWriter(new BufferedWriter(
+				new OutputStreamWriter(new FileOutputStream(fileName))));
+
 			for (Map.Entry<String, String> ent : props.entrySet())
 			{
 				writer.println(ent.getKey() + "=" + ent.getValue());
