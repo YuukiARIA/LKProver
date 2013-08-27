@@ -25,6 +25,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
+import lovelogic.config.Config;
 import lovelogic.gui.figure.ProofFigure;
 import lovelogic.gui.figure.ProofFigureBuilder;
 import lovelogic.latex.LaTeXStringBuilder;
@@ -72,7 +73,24 @@ public class MainFrame extends JFrame
 		});
 
 		checkMinimize = new JCheckBox("Minimize Depth of Proof Tree");
+		checkMinimize.setSelected(Config.getSystemConfig().getDefault("flags.minimize", "false").equals("true"));
+		checkMinimize.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				Config.getSystemConfig().setBoolean("flags.minimize", checkMinimize.isSelected());
+			}
+		});
+
 		checkIntuition = new JCheckBox("LJ (Intuitionistic Logic)");
+		checkIntuition.setSelected(Config.getSystemConfig().getDefault("flags.lj", "false").equals("true"));
+		checkIntuition.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				Config.getSystemConfig().setBoolean("flags.lj", checkIntuition.isSelected());
+			}
+		});
 
 		JPanel panelChecks = new JPanel();
 		panelChecks.setLayout(new BoxLayout(panelChecks, BoxLayout.Y_AXIS));
@@ -201,6 +219,14 @@ public class MainFrame extends JFrame
 	public static void main(String[] args)
 	{
 		System.out.println("GUI test.");
+
+		Runtime.getRuntime().addShutdownHook(new Thread()
+		{
+			public void run()
+			{
+				Config.saveSystemConfig();
+			}
+		});
 
 		try
 		{
