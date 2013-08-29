@@ -1,5 +1,6 @@
 package lovelogic.syntax;
 
+import lovelogic.formatter.ASCIIFormulaFormatter;
 import lovelogic.syntax.parser.Parser;
 import lovelogic.syntax.parser.exception.ParserException;
 
@@ -47,7 +48,7 @@ public abstract class Formula
 
 	public String toString()
 	{
-		return FormulaStringBuilder.toString(this);
+		return ASCIIFormulaFormatter.getInstance().toString(this);
 	}
 
 	public static abstract class Binary extends Formula
