@@ -98,6 +98,24 @@ Therefore rules of contraction and permutation are not needed.
     ------------ (Not-R)
      L |- ~A, R
 
+In addition, following two rules for equivalence are included:
+
+     L, A => B |- R
+    ----------------- (Eqv-L1)
+     L, A <=> B |- R
+    
+     L, B => A |- R
+    ----------------- (Eqv-L2)
+     L, A <=> B |- R
+    
+     L, A => B, B => A |- R
+    ------------------------ (Eqv-L)
+        L, A <=> B |- R
+    
+     L |- A => B, R   L |- B => A, R
+    --------------------------------- (Eqv-R)
+             L |- A <=> B, R
+
 Author
 ------
 
