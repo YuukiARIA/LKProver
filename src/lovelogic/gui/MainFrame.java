@@ -46,6 +46,8 @@ public class MainFrame extends JFrame
 	private JCheckBox checkMinimize;
 	private JCheckBox checkIntuition;
 
+	private FontDialog fontDialog;
+
 	public MainFrame()
 	{
 		setTitle("LK Prover");
@@ -175,22 +177,42 @@ public class MainFrame extends JFrame
 		dialog.setVisible(true);
 	}
 
+	private void selectViewFont()
+	{
+		if (fontDialog == null)
+		{
+			fontDialog = new FontDialog(this);
+		}
+
+		fontDialog.setSelectedFont(pfPanel.getFigureFont());
+		fontDialog.showDialog();
+		if (fontDialog.isAproved())
+		{
+			pfPanel.setFigureFont(fontDialog.getSelectedFont());
+			pfPanel.repaint();
+		}
+	}
+
 	private class MainMenuBar extends JMenuBar
 	{
 		public MainMenuBar()
 		{
 			JMenu menuFile = new JMenu("File");
 			JMenu menuEdit = new JMenu("Edit");
+			JMenu menuView = new JMenu("View");
 			JMenuItem itemSaveImg = new JMenuItem("Save Image...");
 			JMenuItem itemExit = new JMenuItem("Exit");
 			JMenuItem itemConvert = new JMenuItem("Convert to LaTeX");
+			JMenuItem itemFont = new JMenuItem("Font...");
 
 			menuFile.add(itemSaveImg);
 			menuFile.addSeparator();
 			menuFile.add(itemExit);
 			menuEdit.add(itemConvert);
+			menuView.add(itemFont);
 			add(menuFile);
 			add(menuEdit);
+			add(menuView);
 
 			itemSaveImg.addActionListener(new ActionListener()
 			{
@@ -211,6 +233,13 @@ public class MainFrame extends JFrame
 				public void actionPerformed(ActionEvent e)
 				{
 					convertLaTeX();
+				}
+			});
+			itemFont.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(ActionEvent e)
+				{
+					selectViewFont();
 				}
 			});
 		}
