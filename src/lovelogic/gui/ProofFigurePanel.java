@@ -22,7 +22,17 @@ public class ProofFigurePanel extends JPanel
 
 	public ProofFigurePanel()
 	{
-		drawer.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
+		setFigureFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
+	}
+
+	public void setFigureFont(Font font)
+	{
+		drawer.setFont(font);
+	}
+
+	public Font getFigureFont()
+	{
+		return drawer.getFont();
 	}
 
 	public void setProofFigure(ProofFigure pf)
