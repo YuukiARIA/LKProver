@@ -22,6 +22,11 @@ public class ProofFigureDrawer
 		needLayout = true;
 	}
 
+	public Font getFont()
+	{
+		return font;
+	}
+
 	public Dimension getSize()
 	{
 		if (pf != null)
