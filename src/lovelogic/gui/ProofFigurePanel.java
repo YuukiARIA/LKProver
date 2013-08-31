@@ -12,6 +12,7 @@ import java.awt.image.RenderedImage;
 
 import javax.swing.JPanel;
 
+import lovelogic.config.Config;
 import lovelogic.gui.figure.ProofFigure;
 import lovelogic.gui.figure.ProofFigureDrawer;
 
@@ -22,12 +23,13 @@ public class ProofFigurePanel extends JPanel
 
 	public ProofFigurePanel()
 	{
-		setFigureFont(new Font(Font.MONOSPACED, Font.PLAIN, 14));
+		drawer.setFont(loadFont());
 	}
 
 	public void setFigureFont(Font font)
 	{
 		drawer.setFont(font);
+		storeFont(font);
 	}
 
 	public Font getFigureFont()
@@ -84,5 +86,20 @@ public class ProofFigurePanel extends JPanel
 		g.fillRect(0, 0, getWidth(), getHeight());
 
 		drawContents(g, getWidth(), getHeight());
+	}
+
+	private static Font loadFont()
+	{
+		Config config = Config.getSystemConfig();
+		String name = config.getDefault("font.name", Font.MONOSPACED);
+		int size = config.getInt("font.size", 14);
+		return new Font(name, Font.PLAIN, size);
+	}
+
+	private static void storeFont(Font font)
+	{
+		Config config = Config.getSystemConfig();
+		config.set("font.name", font.getFamily());
+		config.set("font.size", font.getSize());
 	}
 }
