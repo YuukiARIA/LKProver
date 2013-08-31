@@ -42,9 +42,9 @@ public class Config
 		return value;
 	}
 
-	public void set(String key, String value)
+	public <T> void set(String key, T value)
 	{
-		props.put(key, value);
+		props.put(key, String.valueOf(value));
 	}
 
 	public boolean getBoolean(String key)
@@ -55,6 +55,23 @@ public class Config
 	public void setBoolean(String key, boolean b)
 	{
 		set(key, String.valueOf(b));
+	}
+
+	public int getInt(String key, int defval)
+	{
+		String s = props.get(key);
+		if (s != null)
+		{
+			try
+			{
+				return Integer.parseInt(s);
+			}
+			catch (NumberFormatException e)
+			{
+			}
+		}
+		props.put(key, String.valueOf(defval));
+		return defval;
 	}
 
 	public void load()
