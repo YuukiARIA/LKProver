@@ -51,7 +51,7 @@ public class Lexer
 				succ();
 				return token(Kind.IMPLY, "=>");
 			}
-			throw new RuntimeException();
+			throw new LexerException("incomplete '=>'", column);
 		case '<':
 			succ();
 			if (peek() == '=')
@@ -63,7 +63,7 @@ public class Lexer
 					return token(Kind.EQUIV, "<=>");
 				}
 			}
-			throw new RuntimeException();
+			throw new LexerException("incomplete '<=>'", column);
 		case '/':
 			succ();
 			if (peek() == '\\')
@@ -71,7 +71,7 @@ public class Lexer
 				succ();
 				return token(Kind.AND, "/\\");
 			}
-			throw new RuntimeException();
+			throw new LexerException("incomplete '/\\'", column);
 		case '\\':
 			succ();
 			if (peek() == '/')
@@ -79,7 +79,7 @@ public class Lexer
 				succ();
 				return token(Kind.OR, "\\/");
 			}
-			throw new RuntimeException();
+			throw new LexerException("incomplete '\\/'", column);
 		case '!':
 			succ();
 			return token(Kind.NOT, "!");
