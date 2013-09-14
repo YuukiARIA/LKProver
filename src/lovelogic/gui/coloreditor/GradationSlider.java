@@ -181,6 +181,7 @@ public class GradationSlider extends JComponent
 		{
 			changeValue(locationToValue(e.getX()));
 			drag = true;
+			hover = true;
 			repaint();
 		}
 
