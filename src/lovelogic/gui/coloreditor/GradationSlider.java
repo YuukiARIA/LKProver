@@ -117,7 +117,7 @@ public class GradationSlider extends JComponent
 		g.setColor(Color.WHITE);
 		g.drawLine(x, 0, x, trackHeight);
 		p.translate(x, trackHeight);
-		g.setColor(hover ? Color.BLACK : Color.GRAY);
+		g.setColor(hover ? Color.BLACK : Color.LIGHT_GRAY);
 		g.fill(p);
 		p.translate(-x, -trackHeight);
 	}
@@ -170,7 +170,10 @@ public class GradationSlider extends JComponent
 
 		public void mouseExited(MouseEvent e)
 		{
-			hover = false;
+			if (!drag)
+			{
+				hover = false;
+			}
 			repaint();
 		}
 
