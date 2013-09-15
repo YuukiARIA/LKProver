@@ -61,6 +61,7 @@ public class GradationSlider extends JComponent
 		if (minimum <= value && value <= maximum)
 		{
 			this.value = value;
+			dispatchChangeEvent();
 		}
 		return this;
 	}
@@ -139,12 +140,6 @@ public class GradationSlider extends JComponent
 		return Math.max(minimum, Math.min(v, maximum));
 	}
 
-	private void changeValue(int value)
-	{
-		setValue(value);
-		dispatchChangeEvent();
-	}
-
 	public void addChangeListener(ChangeListener l)
 	{
 		listenerList.add(ChangeListener.class, l);
@@ -179,7 +174,7 @@ public class GradationSlider extends JComponent
 
 		public void mousePressed(MouseEvent e)
 		{
-			changeValue(locationToValue(e.getX()));
+			setValue(locationToValue(e.getX()));
 			drag = true;
 			hover = true;
 			repaint();
@@ -208,7 +203,7 @@ public class GradationSlider extends JComponent
 		{
 			if (drag)
 			{
-				changeValue(locationToValue(e.getX()));
+				setValue(locationToValue(e.getX()));
 			}
 			repaint();
 		}
