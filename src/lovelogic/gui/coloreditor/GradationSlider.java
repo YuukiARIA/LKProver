@@ -147,7 +147,11 @@ public class GradationSlider extends JComponent
 	{
 		int x0 = cursorSize;
 		int x1 = getWidth() - cursorSize;
-		int v = minimum + (maximum - minimum) * (x - x0) / (x1 - x0);
+		int v = 0;
+		if (x0 < x1)
+		{
+			v = minimum + (maximum - minimum) * (x - x0) / (x1 - x0);
+		}
 		return Math.max(minimum, Math.min(v, maximum));
 	}
 
