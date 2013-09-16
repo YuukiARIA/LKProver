@@ -8,6 +8,8 @@ import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -32,9 +34,13 @@ public class GradationSlider extends JComponent
 
 	public GradationSlider()
 	{
+		setFocusable(true);
+
 		MouseHandler mh = new MouseHandler();
 		addMouseListener(mh);
 		addMouseMotionListener(mh);
+
+		addKeyListener(new KeyHandler());
 
 		setPreferredSize(new Dimension(180, trackHeight + cursorSize));
 	}
@@ -58,7 +64,7 @@ public class GradationSlider extends JComponent
 
 	public GradationSlider setValue(int value)
 	{
-		if (minimum <= value && value <= maximum)
+		if (this.value != value && minimum <= value && value <= maximum)
 		{
 			this.value = value;
 			dispatchChangeEvent();
@@ -76,6 +82,11 @@ public class GradationSlider extends JComponent
 	{
 		c2 = c;
 		return this;
+	}
+
+	private void addValue(int d)
+	{
+		setValue(getValue() + d);
 	}
 
 	protected void paintComponent(Graphics g)
@@ -174,6 +185,8 @@ public class GradationSlider extends JComponent
 
 		public void mousePressed(MouseEvent e)
 		{
+			requestFocusInWindow();
+
 			setValue(locationToValue(e.getX()));
 			drag = true;
 			hover = true;
@@ -206,6 +219,24 @@ public class GradationSlider extends JComponent
 				setValue(locationToValue(e.getX()));
 			}
 			repaint();
+		}
+	}
+
+	private class KeyHandler extends KeyAdapter
+	{
+		public void keyPressed(KeyEvent e)
+		{
+			switch (e.getKeyCode())
+			{
+			case KeyEvent.VK_UP:
+			case KeyEvent.VK_RIGHT:
+				addValue(1);
+				break;
+			case KeyEvent.VK_DOWN:
+			case KeyEvent.VK_LEFT:
+				addValue(-1);
+				break;
+			}
 		}
 	}
 }
