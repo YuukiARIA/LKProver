@@ -13,8 +13,11 @@ import javax.swing.event.ChangeListener;
 @SuppressWarnings("serial")
 public class SpinSlider extends JComponent
 {
+	private final Object LOCK = new Object();
+
 	private GradationSlider slider;
 	private JSpinner spinner;
+	private boolean sync;
 
 	public SpinSlider(int value, int min, int max, int step)
 	{
@@ -23,8 +26,7 @@ public class SpinSlider extends JComponent
 		{
 			public void stateChanged(ChangeEvent e)
 			{
-				spinner.setValue(slider.getValue());
-				dispatchChangeEvent();
+				updateValue(slider.getValue());
 			}
 		});
 		spinner = new JSpinner(new SpinnerNumberModel(value, min, max, step));
@@ -32,8 +34,7 @@ public class SpinSlider extends JComponent
 		{
 			public void stateChanged(ChangeEvent e)
 			{
-				slider.setValue((Integer)spinner.getValue());
-				dispatchChangeEvent();
+				updateValue((Integer)spinner.getValue());
 			}
 		});
 
@@ -56,13 +57,30 @@ public class SpinSlider extends JComponent
 
 	public void setValue(int value)
 	{
-		slider.setValue(value);
-		spinner.setValue(value);
+		if (getValue() != value)
+		{
+			updateValue(value);
+		}
 	}
 
 	public void setBarColor(Color c1, Color c2)
 	{
 		slider.setLeftColor(c1).setRightColor(c2);
+	}
+
+	private void updateValue(int value)
+	{
+		synchronized (LOCK)
+		{
+			if (!sync)
+			{
+				sync = true;
+				slider.setValue(value);
+				spinner.setValue(value);
+				dispatchChangeEvent();
+				sync = false;
+			}
+		}
 	}
 
 	public void addChangeListener(ChangeListener l)
