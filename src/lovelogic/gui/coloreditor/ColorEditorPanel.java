@@ -1,57 +1,42 @@
 package lovelogic.gui.coloreditor;
 
 import java.awt.Color;
-import java.awt.Graphics;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.UIManager;
-import javax.swing.WindowConstants;
+import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-
-@SuppressWarnings("serial")
-class ColorBox extends JComponent
-{
-	private Color color = Color.BLACK;
-
-	public Color getColor()
-	{
-		return color;
-	}
-
-	public void setColor(Color color)
-	{
-		this.color = color;
-	}
-
-	protected void paintComponent(Graphics g)
-	{
-		g.setColor(color);
-		g.fillRect(0, 0, getWidth(), getHeight());
-	}
-}
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 @SuppressWarnings("serial")
 public class ColorEditorPanel extends JPanel
 {
-	private ColorBox colorBox;
+	private JPanel colorBox;
 	private SpinSlider sliderR;
 	private SpinSlider sliderG;
 	private SpinSlider sliderB;
+	private JTextField textCode;
+	private boolean sync;
 
 	public ColorEditorPanel()
 	{
-		colorBox = new ColorBox();
+		colorBox = new JPanel();
+		colorBox.setOpaque(true);
 
 		ChangeListener updateHandler = new ChangeListener()
 		{
 			public void stateChanged(ChangeEvent e)
 			{
-				updateGradation();
+				if (!sync)
+				{
+					sync = true;
+					updateColors();
+					syncColorCode();
+					sync = false;
+				}
 			}
 		};
 
@@ -61,6 +46,34 @@ public class ColorEditorPanel extends JPanel
 		sliderG.addChangeListener(updateHandler);
 		sliderB = new SpinSlider(0, 0, 255, 1);
 		sliderB.addChangeListener(updateHandler);
+
+		textCode = new JTextField();
+		textCode.getDocument().addDocumentListener(new DocumentListener()
+		{
+			public void removeUpdate(DocumentEvent e)
+			{
+				if (!sync)
+				{
+					sync = true;
+					modifyColorCode();
+					sync = false;
+				}
+			}
+
+			public void insertUpdate(DocumentEvent e)
+			{
+				if (!sync)
+				{
+					sync = true;
+					modifyColorCode();
+					sync = false;
+				}
+			}
+
+			public void changedUpdate(DocumentEvent e)
+			{
+			}
+		});
 
 		GroupLayout gl = new GroupLayout(this);
 		setLayout(gl);
@@ -72,6 +85,7 @@ public class ColorEditorPanel extends JPanel
 				.addComponent(sliderR)
 				.addComponent(sliderG)
 				.addComponent(sliderB)
+				.addComponent(textCode)
 			)
 		);
 		gl.setVerticalGroup(gl.createParallelGroup(Alignment.CENTER)
@@ -80,10 +94,13 @@ public class ColorEditorPanel extends JPanel
 				.addComponent(sliderR)
 				.addComponent(sliderG)
 				.addComponent(sliderB)
+				.addComponent(textCode, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
 			)
 		);
 
-		updateGradation();
+		setColor(Color.RED);
+		updateColors();
+		syncColorCode();
 	}
 
 	public Color getColor()
@@ -99,34 +116,49 @@ public class ColorEditorPanel extends JPanel
 		sliderR.setValue(r);
 		sliderG.setValue(g);
 		sliderB.setValue(b);
-		colorBox.setColor(new Color(r, g, b));
+		updateColors();
 	}
 
-	private void updateGradation()
+	public void setColor(Color color)
+	{
+		setColor(color.getRed(), color.getGreen(), color.getBlue());
+	}
+
+	private void updateColors()
 	{
 		Color c = getColor();
-		colorBox.setColor(c);
-		sliderR.setBarColor(new Color(0, c.getGreen(), c.getBlue()), new Color(255, c.getGreen(), c.getBlue()));
-		sliderG.setBarColor(new Color(c.getRed(), 0, c.getBlue()), new Color(c.getRed(), 255, c.getBlue()));
-		sliderB.setBarColor(new Color(c.getRed(), c.getGreen(), 0), new Color(c.getRed(), c.getGreen(), 255));
+		colorBox.setBackground(c);
+
+		int r = c.getRed();
+		int g = c.getGreen();
+		int b = c.getBlue();
+
+		sliderR.setBarColor(new Color(0, g, b), new Color(255, g, b));
+		sliderG.setBarColor(new Color(r, 0, b), new Color(r, 255, b));
+		sliderB.setBarColor(new Color(r, g, 0), new Color(r, g, 255));
+
 		repaint();
 	}
 
-	public static void main(String[] args)
+	private void syncColorCode()
 	{
+		Color c = getColor();
+		textCode.setText(String.format("%06x", c.getRGB() & 0x00FFFFFF));
+	}
+
+	private void modifyColorCode()
+	{
+		String code = textCode.getText();
 		try
 		{
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			int h = Integer.parseInt(code, 16);
+			int r = (h >>> 16) & 0xFF;
+			int g = (h >>> 8) & 0xFF;
+			int b = h & 0xFF;
+			setColor(r, g, b);
 		}
-		catch (Exception e)
+		catch (NumberFormatException e)
 		{
 		}
-
-		JFrame f = new JFrame();
-		f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		f.add(new ColorEditorPanel());
-		f.pack();
-		f.setLocationRelativeTo(null);
-		f.setVisible(true);
 	}
 }
