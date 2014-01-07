@@ -41,6 +41,18 @@ public class Prover
 		{
 			Deducer.getDeductionList(deductions, goal, a);
 		}
+		for (Formula x : goal.getLeftFormulae())
+		{
+			SequentList seqs = new SequentList();
+			seqs.addSequent(goal.copy().removeLeft(x));
+			deductions.add(Deduction.of(seqs, "(WL)"));
+		}
+		for (Formula x : goal.getRightFormulae())
+		{
+			SequentList seqs = new SequentList();
+			seqs.addSequent(goal.copy().removeRight(x));
+			deductions.add(Deduction.of(seqs, "(WR)"));
+		}
 
 		for (Deduction deduction : deductions)
 		{
